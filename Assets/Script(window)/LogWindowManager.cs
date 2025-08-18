@@ -21,7 +21,7 @@ public class LogWindowManager : MonoBehaviour
 
     private void Start()
 {
-    Log("게임 시작됨");
+    Log("gamestart");
 }
     private void Awake()
     {
@@ -56,13 +56,13 @@ public class LogWindowManager : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(command)) return;
 
-        Log("명령어 입력: " + command);
+        Log("please input key: " + command);
 
         switch (command.ToLower())
         {
             case "help":
-                Log("사용 가능한 명령어: help, hello, clear");
-                Debug.Log("인식됨");
+                Log("command: help, hello, clear");
+                Debug.Log("got it.");
                 break;
             case "hello":
                 Log("Hello, Commander!");
@@ -71,7 +71,7 @@ public class LogWindowManager : MonoBehaviour
                 ClearLog();
                 break;
             default:
-                Log("알 수 없는 명령어: " + command);
+                Log("error: " + command);
                 break;
         }
 
