@@ -8,21 +8,17 @@ public class LogWindowManager : MonoBehaviour
     public static LogWindowManager Instance;
 
     [Header("UI References")]
-    public TMP_Text logText;           // Scroll View → Content → TMP Text
-    public TMP_InputField inputField;  // Input Field
-    public ScrollRect scrollRect;      // Scroll View
+    public TMP_Text logText;
+    public TMP_InputField inputField;
+    public ScrollRect scrollRect;
 
     [Header("Settings")]
-    public int maxLines = 20;
+    public int maxLines = 50;
 
     private string[] lines;
     private int currentLine = 0;
     private StringBuilder sb;
 
-    private void Start()
-{
-    Log("gamestart");
-}
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -33,7 +29,6 @@ public class LogWindowManager : MonoBehaviour
 
         logText.text = "";
         inputField.onSubmit.AddListener(OnCommandEntered);
-
         inputField.ActivateInputField();
     }
 
@@ -44,25 +39,27 @@ public class LogWindowManager : MonoBehaviour
 
         sb.Clear();
         int start = Mathf.Max(0, currentLine - maxLines);
-        for (int i = currentLine - 1; i >= start; i--)
-            sb.AppendLine(lines[i % maxLines]);
+        for (int i = start; i < currentLine; i++)
+        {
+            sb.AppendLine(lines[i % maxLines]); // 한 줄씩 아래→위 쌓기
+        }
 
         logText.text = sb.ToString();
+
         Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.verticalNormalizedPosition = 0f; // 항상 맨 아래 표시
     }
 
     private void OnCommandEntered(string command)
     {
         if (string.IsNullOrWhiteSpace(command)) return;
 
-        Log("please input key: " + command);
+        Log("명령어 입력: " + command);
 
         switch (command.ToLower())
         {
             case "help":
-                Log("command: help, hello, clear");
-                Debug.Log("got it.");
+                Log("사용 가능한 명령어: help, hello, clear");
                 break;
             case "hello":
                 Log("Hello, Commander!");
@@ -71,7 +68,7 @@ public class LogWindowManager : MonoBehaviour
                 ClearLog();
                 break;
             default:
-                Log("error: " + command);
+                Log("알 수 없는 명령어: " + command);
                 break;
         }
 
