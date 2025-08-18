@@ -104,10 +104,10 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Jitter: 0.029
+    - _Jitter: 0.02
     - _MaskStrength: 0
     - _Metallic: 0
-    - _NoiseAmount: 0.0229
+    - _NoiseAmount: 0.0249
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
