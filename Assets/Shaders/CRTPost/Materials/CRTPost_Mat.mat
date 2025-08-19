@@ -82,46 +82,57 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Aberration: 0.106
+    - _Aberration: 0.1
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _BandSpeed: 1
+    - _BandStrength: 0.1
+    - _BandThickness: 0.2
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
+    - _BurstChance: 0.001
+    - _BurstLen: 0.05
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _CornerRadius: 0.25
+    - _CornerRadius: 0.2
     - _Cull: 2
-    - _Curvature: 0
+    - _Curvature: 0.075
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
+    - _FlickerBase: 0.00075
+    - _FlickerBurst: 0.01
     - _Gamma: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Jitter: 0.04
-    - _MaskStrength: 0.5
+    - _Jitter: 0.025
+    - _JitterBase: 0
+    - _JitterBurst: 1
+    - _MaskPixelSize: 2.25
+    - _MaskStrength: 1
     - _Metallic: 0
-    - _NoiseAmount: 0.0249
+    - _NoiseAmount: 0.02
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ScanlineCount: 2000
-    - _ScanlineIntensity: 0.491
+    - _ScanlineCount: 1500
+    - _ScanlineIntensity: 0.5
+    - _Seed: 100
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _TimeScale: 1.2
-    - _Vignette: 0.72
+    - _TimeScale: 5
+    - _Vignette: 0.5
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
