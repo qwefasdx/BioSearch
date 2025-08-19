@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-2628598361291991442
+--- !u!21 &-5327676744230259093
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
@@ -36,7 +36,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 6881357488894258417}
+        m_Texture: {fileID: 4754424704513935937}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -144,7 +144,7 @@ MonoBehaviour:
     m_StrikethroughOffset: 16
     m_StrikethroughThickness: 5.625
     m_TabWidth: 45
-  m_Material: {fileID: -2628598361291991442}
+  m_Material: {fileID: -5327676744230259093}
   m_SourceFontFileGUID: 2c325d2c871fbf04f812d8a827652a0c
   m_CreationSettings:
     sourceFontFileName: 
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_GlyphTable: []
   m_CharacterTable: []
   m_AtlasTextures:
-  - {fileID: 6881357488894258417}
+  - {fileID: 4754424704513935937}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 0
   m_GetFontFeatures: 1
@@ -190,10 +190,10 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_MultipleSubstitutionRecords: []
     m_LigatureSubstitutionRecords:
-    - m_ComponentGlyphIDs: b5000000a20300001b3b0000
-      m_LigatureGlyphID: 15940
     - m_ComponentGlyphIDs: 73030000243b0000
       m_LigatureGlyphID: 892
+    - m_ComponentGlyphIDs: b5000000a20300001b3b0000
+      m_LigatureGlyphID: 15940
     m_GlyphPairAdjustmentRecords: []
     m_MarkToBaseAdjustmentRecords: []
     m_MarkToMarkAdjustmentRecords: []
@@ -254,7 +254,7 @@ MonoBehaviour:
     kerningPairs: []
   fallbackFontAssets: []
   atlas: {fileID: 0}
---- !u!28 &6881357488894258417
+--- !u!28 &4754424704513935937
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

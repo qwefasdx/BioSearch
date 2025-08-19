@@ -81,11 +81,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82ae3666abe0194459ed63676d01b94a, type: 3}
+  m_Script: {fileID: 0}
   m_Name: CRTPostFeature
   m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    enabled: 1
-    material: {fileID: 2100000, guid: 2fb7ab25c8d3f2e4eaf5804b13eb6fe3, type: 2}
-    passEvent: 550
