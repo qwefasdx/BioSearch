@@ -72,13 +72,17 @@ Shader "CRT/CRTPost"
                 return 1.0 - edge; // Áß¾Ó=1, ¸ð¼­¸®=0
             }
 
-            float3 ApertureMask(float2 uv, float s)
+            float3 ApertureMask(float2 uv, float strength)
             {
-                float stripe = frac(uv.x * 3.0);
-                float3 mask = (stripe < 1.0) ? float3(1.0,0.5,0.5) :
-                              (stripe < 2.0) ? float3(0.5,1.0,0.5) :
-                                               float3(0.5,0.5,1.0);
-                return lerp(float3(1.0,1.0,1.0), mask, s);
+                float px = floor(uv.x * _ScreenParams.x);
+
+                float stripe = fmod(px, 3.0);
+
+                float3 mask = (stripe < 0.5) ? float3(1.0, 0.45, 0.45) :
+                  (stripe < 1.5) ? float3(0.45, 1.0, 0.45) :
+                                   float3(0.45, 0.45, 1.0);
+
+                return lerp(float3(1.0,1.0,1.0), mask, saturate(strength));
             }
 
             float Scanline(float2 uv, float lines, float intensity)

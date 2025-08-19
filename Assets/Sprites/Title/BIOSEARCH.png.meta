@@ -173,7 +173,73 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: BIOSEARCH_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 205
+        height: 174
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6fb1e3bd60714548b3465ef09779183
+      internalID: -134448852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BIOSEARCH_1
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 0
+        width: 172
+        height: 174
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c7b94f99f8c2de4da2712c4abbfd486
+      internalID: -1245941099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BIOSEARCH_2
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 0
+        width: 397
+        height: 174
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b62a90b2d8f01aa4c8f2c7323a4f7ef6
+      internalID: -65082787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -187,7 +253,15 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      BIOSEARCH_0: -134448852
+      BIOSEARCH_1: -1245941099
+      BIOSEARCH_2: -65082787
+      BIOSEARCH_4: 1953859638
+      BIOSEARCH_5: 958435864
+      BIOSEARCH_6: 812318964
+      BIOSEARCH_7: -1005504670
+      BIOSEARCH_8: -1261076914
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
