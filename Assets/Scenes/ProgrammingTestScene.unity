@@ -2274,13 +2274,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a89668d670007b14eaedbb8ca771a4c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickClip: {fileID: 8300000, guid: 87b1500086ded394da4f70896591fd6c, type: 3}
-  leftClickOnly: 1
   outputGroup: {fileID: 4642445269679030687, guid: 78a983ade10e9284eb963e07b93af5c0, type: 2}
-  volume: 0.25
-  pitch: 1
-  pitchVariance: 0.1
-  minIntervalMs: 40
+  ignoreWhenOverUI: 0
+  useLeft: 1
+  useRight: 1
+  useMiddle: 1
+  leftDown:
+    clip: {fileID: 8300000, guid: b9b10906abded834ba8efd211a80e6fd, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
+  rightDown:
+    clip: {fileID: 8300000, guid: b9b10906abded834ba8efd211a80e6fd, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
+  middleDown:
+    clip: {fileID: 8300000, guid: db9178d2b2cff0540becb6dffc1fa99c, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
+  leftUp:
+    clip: {fileID: 8300000, guid: 1f43490a96888774982deb900cdd33d3, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
+  rightUp:
+    clip: {fileID: 8300000, guid: 1f43490a96888774982deb900cdd33d3, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
+  middleUp:
+    clip: {fileID: 8300000, guid: 80df6a01ef6e7a541832b176a989f69f, type: 3}
+    volume: 1
+    pitch: 1
+    pitchVariance: 0.03
+    minIntervalMs: 30
 --- !u!114 &1228096833
 MonoBehaviour:
   m_ObjectHideFlags: 0
