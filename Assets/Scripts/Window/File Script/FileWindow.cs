@@ -6,19 +6,20 @@ using System.Collections.Generic;
 public class FileWindow : MonoBehaviour
 {
     [Header("Scroll Area")]
-    public GameObject fileIconPrefab;   // 아이콘 프리팹
-    public Transform contentArea;       // ScrollView Content
-    public TMP_Text emptyText;          // Empty Folder 표시용 텍스트
+    public GameObject fileIconPrefab;
+    public Transform contentArea;
+    public TMP_Text emptyText;
 
     [Header("Top Bar")]
-    public Button backButton;           // TopBar Back 버튼
-    public TMP_Text pathText;           // 현재 경로 표시
+    public Button backButton;
+    public TMP_Text pathText;
 
     private FileIcon selectedIcon;
     private Folder rootFolder;
     private Folder currentFolder;
 
     private Stack<Folder> folderHistory = new Stack<Folder>();
+    private Folder abnormalFolder;
 
     void Awake()
     {
@@ -46,11 +47,43 @@ public class FileWindow : MonoBehaviour
         rootFolder.children.Add(new Folder("hand", rootFolder));
         rootFolder.children.Add(organ);
 
+        // 랜덤 이상 폴더 지정 (하위 폴더 포함)
+        abnormalFolder = PickRandomAbnormal(rootFolder);
+
         // 루트 폴더 열기
         OpenFolder(rootFolder, false);
     }
 
-    // 폴더 열기
+    private Folder PickRandomAbnormal(Folder root)
+    {
+        List<Folder> allFolders = new List<Folder>();
+        CollectFoldersRecursive(root, allFolders);
+        allFolders.Remove(root); // 루트 제외
+
+        if (allFolders.Count > 0)
+        {
+            int idx = Random.Range(0, allFolders.Count);
+            Folder abnormal = allFolders[idx];
+            MarkAbnormalRecursive(abnormal);
+            return abnormal;
+        }
+        return null;
+    }
+
+    private void CollectFoldersRecursive(Folder folder, List<Folder> list)
+    {
+        list.Add(folder);
+        foreach (var child in folder.children)
+            CollectFoldersRecursive(child, list);
+    }
+
+    private void MarkAbnormalRecursive(Folder folder)
+    {
+        folder.isAbnormal = true;
+        foreach (var child in folder.children)
+            MarkAbnormalRecursive(child);
+    }
+
     public void OpenFolder(Folder folder, bool recordPrevious = true)
     {
         if (recordPrevious && currentFolder != null && folder != currentFolder)
@@ -58,21 +91,17 @@ public class FileWindow : MonoBehaviour
 
         currentFolder = folder;
 
-        // ScrollView Content 초기화
         foreach (Transform child in contentArea)
             Destroy(child.gameObject);
 
         selectedIcon = null;
 
-        // Back 버튼 항상 활성화
         if (backButton != null)
             backButton.gameObject.SetActive(true);
 
-        // 현재 경로 표시
         if (pathText != null)
             pathText.text = GetFullPath(currentFolder);
 
-        // 비어있는 폴더 처리
         emptyText.gameObject.SetActive(folder.children.Count == 0);
 
         // 아이콘 생성
@@ -96,16 +125,12 @@ public class FileWindow : MonoBehaviour
     public void OpenSelected()
     {
         if (selectedIcon == null) return;
-
-        Folder folder = selectedIcon.GetFolder();
-        OpenFolder(folder);
+        OpenFolder(selectedIcon.GetFolder());
     }
 
     private void OnBackButtonClicked()
     {
-        // 루트 폴더에서는 이동하지 않음
-        if (currentFolder == rootFolder)
-            return;
+        if (currentFolder == rootFolder) return;
 
         if (folderHistory.Count > 0)
         {
@@ -117,7 +142,6 @@ public class FileWindow : MonoBehaviour
         }
     }
 
-    // 전체 경로 문자열 반환
     private string GetFullPath(Folder folder)
     {
         List<string> pathList = new List<string>();
@@ -128,20 +152,5 @@ public class FileWindow : MonoBehaviour
             temp = temp.parent;
         }
         return string.Join(" / ", pathList);
-    }
-}
-
-// Folder 클래스
-[System.Serializable]
-public class Folder
-{
-    public string name;
-    public List<Folder> children = new List<Folder>();
-    public Folder parent;
-
-    public Folder(string name, Folder parent = null)
-    {
-        this.name = name;
-        this.parent = parent;
     }
 }
