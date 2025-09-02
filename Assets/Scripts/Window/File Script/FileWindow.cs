@@ -10,28 +10,28 @@ public class FileWindow : MonoBehaviour
     public Transform contentArea;
     public TMP_Text emptyText;
 
-    [Header("Top Bar")]
+    [Header("Path Panel")]
+    public PathPanelManager pathPanelManager;
+
+    [Header("Back Button")]
     public Button backButton;
-    public TMP_Text pathText;
 
     private FileIcon selectedIcon;
     private Folder rootFolder;
     private Folder currentFolder;
-
     private Stack<Folder> folderHistory = new Stack<Folder>();
-    private Folder abnormalFolder;
 
     void Awake()
     {
-        if (backButton != null)
-            backButton.onClick.AddListener(OnBackButtonClicked);
+        // PathPanelManager 먼저 초기화
+        if (pathPanelManager != null)
+            pathPanelManager.Initialize(this);
     }
 
     void Start()
     {
-        // 폴더 구조 생성
+        // 폴더 구조
         rootFolder = new Folder("Root");
-
         Folder head = new Folder("head", rootFolder);
         head.children.Add(new Folder("mouse", head));
         head.children.Add(new Folder("left eye", head));
@@ -47,41 +47,29 @@ public class FileWindow : MonoBehaviour
         rootFolder.children.Add(new Folder("hand", rootFolder));
         rootFolder.children.Add(organ);
 
-        // 랜덤 이상 폴더 지정 (하위 폴더 포함)
-        abnormalFolder = PickRandomAbnormal(rootFolder);
+        // 이상 폴더 랜덤 지정 + 하위 폴더 상속
+        PickAbnormalFolderRecursive(rootFolder);
 
-        // 루트 폴더 열기
+        // Back 버튼 항상 활성화
+        if (backButton != null)
+            backButton.onClick.AddListener(OnBackButtonClicked);
+        if (backButton != null)
+            backButton.gameObject.SetActive(true);
+
         OpenFolder(rootFolder, false);
     }
 
-    private Folder PickRandomAbnormal(Folder root)
+    void PickAbnormalFolderRecursive(Folder folder)
     {
-        List<Folder> allFolders = new List<Folder>();
-        CollectFoldersRecursive(root, allFolders);
-        allFolders.Remove(root); // 루트 제외
-
-        if (allFolders.Count > 0)
+        if (folder.children.Count == 0)
         {
-            int idx = Random.Range(0, allFolders.Count);
-            Folder abnormal = allFolders[idx];
-            MarkAbnormalRecursive(abnormal);
-            return abnormal;
+            folder.isAbnormal = Random.value < 0.1f; // 10% 확률
+            return;
         }
-        return null;
-    }
-
-    private void CollectFoldersRecursive(Folder folder, List<Folder> list)
-    {
-        list.Add(folder);
+        int index = Random.Range(0, folder.children.Count);
+        folder.children[index].isAbnormal = true;
         foreach (var child in folder.children)
-            CollectFoldersRecursive(child, list);
-    }
-
-    private void MarkAbnormalRecursive(Folder folder)
-    {
-        folder.isAbnormal = true;
-        foreach (var child in folder.children)
-            MarkAbnormalRecursive(child);
+            PickAbnormalFolderRecursive(child);
     }
 
     public void OpenFolder(Folder folder, bool recordPrevious = true)
@@ -95,22 +83,20 @@ public class FileWindow : MonoBehaviour
             Destroy(child.gameObject);
 
         selectedIcon = null;
-
-        if (backButton != null)
-            backButton.gameObject.SetActive(true);
-
-        if (pathText != null)
-            pathText.text = GetFullPath(currentFolder);
-
         emptyText.gameObject.SetActive(folder.children.Count == 0);
 
-        // 아이콘 생성
         foreach (Folder child in folder.children)
         {
             GameObject iconObj = Instantiate(fileIconPrefab, contentArea);
             FileIcon icon = iconObj.GetComponent<FileIcon>();
-            icon.Setup(child, this);
+            icon.Setup(child, this, folder.isAbnormal);
         }
+
+        if (backButton != null)
+            backButton.gameObject.SetActive(true);
+
+        if (pathPanelManager != null)
+            pathPanelManager.UpdatePathButtons();
     }
 
     public void SetSelectedIcon(FileIcon icon)
@@ -122,35 +108,29 @@ public class FileWindow : MonoBehaviour
         selectedIcon.SetSelected(true);
     }
 
-    public void OpenSelected()
+    public List<Folder> GetCurrentPathList()
     {
-        if (selectedIcon == null) return;
-        OpenFolder(selectedIcon.GetFolder());
+        List<Folder> pathList = new List<Folder>();
+        Folder temp = currentFolder;
+        while (temp != null)
+        {
+            pathList.Insert(0, temp);
+            temp = temp.parent;
+        }
+        return pathList;
+    }
+
+    public void NavigateToPathIndex(int index)
+    {
+        var pathList = GetCurrentPathList();
+        if (index < 0 || index >= pathList.Count) return;
+        OpenFolder(pathList[index], false);
     }
 
     private void OnBackButtonClicked()
     {
-        if (currentFolder == rootFolder) return;
-
-        if (folderHistory.Count > 0)
-        {
-            if (selectedIcon != null)
-                selectedIcon.SetSelected(false);
-
-            Folder previous = folderHistory.Pop();
-            OpenFolder(previous, false);
-        }
-    }
-
-    private string GetFullPath(Folder folder)
-    {
-        List<string> pathList = new List<string>();
-        Folder temp = folder;
-        while (temp != null)
-        {
-            pathList.Insert(0, temp.name);
-            temp = temp.parent;
-        }
-        return string.Join(" / ", pathList);
+        if (folderHistory.Count == 0) return;
+        Folder previous = folderHistory.Pop();
+        OpenFolder(previous, false);
     }
 }
