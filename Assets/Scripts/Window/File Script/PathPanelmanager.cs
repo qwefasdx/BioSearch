@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 public class PathPanelManager : MonoBehaviour
@@ -18,12 +19,6 @@ public class PathPanelManager : MonoBehaviour
 
     public void UpdatePathButtons()
     {
-        if (fileWindow == null)
-        {
-            Debug.LogWarning("PathPanelManager: fileWindow가 아직 할당되지 않았습니다.");
-            return;
-        }
-
         foreach (var btn in pathButtons)
             Destroy(btn.gameObject);
         pathButtons.Clear();
@@ -34,14 +29,8 @@ public class PathPanelManager : MonoBehaviour
             int index = i;
             Button btn = Instantiate(pathButtonPrefab, contentArea);
             TMP_Text text = btn.GetComponentInChildren<TMP_Text>();
-            if (text == null)
-            {
-                Debug.LogError("PathButton Prefab에 TMP_Text가 없습니다.");
-                continue;
-            }
             text.text = pathList[i].name;
 
-            // Width 자동 조절
             float width = text.preferredWidth + 20f;
             btn.GetComponent<RectTransform>().sizeDelta = new Vector2(width, btn.GetComponent<RectTransform>().sizeDelta.y);
 
@@ -50,7 +39,33 @@ public class PathPanelManager : MonoBehaviour
                 fileWindow.NavigateToPathIndex(index);
             });
 
+            EventTrigger trigger = btn.gameObject.AddComponent<EventTrigger>();
+            var entry = new EventTrigger.Entry { eventID = EventTriggerType.Drop };
+            entry.callback.AddListener((data) =>
+            {
+                OnPathDrop(index);
+            });
+            trigger.triggers.Add(entry);
+
             pathButtons.Add(btn);
         }
+    }
+
+    private void OnPathDrop(int index)
+    {
+        FileIcon dragged = FileDragManager.Instance.GetDraggingIcon();
+        if (dragged == null) return;
+
+        Folder target = fileWindow.GetCurrentPathList()[index];
+        Folder source = dragged.GetFolder();
+        if (source == null || target == null) return;
+
+        if (source.parent != null)
+            source.parent.children.Remove(source);
+
+        target.children.Add(source);
+        source.parent = target;
+
+        fileWindow.OpenFolder(fileWindow.GetCurrentPathList()[^1], false);
     }
 }

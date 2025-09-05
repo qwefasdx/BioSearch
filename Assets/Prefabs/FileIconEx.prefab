@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3401691061939007660}
   - component: {fileID: 4826558003796107410}
   - component: {fileID: 3384979227035279951}
+  - component: {fileID: 7316595533712124283}
   m_Layer: 5
   m_Name: FileIconEx
   m_TagString: Untagged
@@ -92,7 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9880a3d2bfa942243a08386119636843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconImage: {fileID: 4415033255476656841}
   fileNameText: {fileID: 7088584376601197219}
 --- !u!225 &4826558003796107410
 CanvasGroup:
@@ -150,6 +150,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7316595533712124283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2148310354490608959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 463f38c604043304fb243a66fb3e1cc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ghostPrefab: {fileID: 8101019979895975088, guid: 3d91b42d0fdf99f4eb80f7de13c0b976, type: 3}
 --- !u!1 &2682983122548907832
 GameObject:
   m_ObjectHideFlags: 0

@@ -2526,7 +2526,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c2de99c93340f4faeb38c18ed864eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathText: {fileID: 1215137032}
 --- !u!114 &1215137036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2539,14 +2538,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 570995fb58ea890479e5597c21d135fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathText: {fileID: 1215137032}
-  canvas: {fileID: 1152194525}
-  linkBoxColor:
-    r: 1
-    g: 0
-    b: 0
-    a: 0.3
-  linkBoxes: []
 --- !u!1 &1228096830
 GameObject:
   m_ObjectHideFlags: 0

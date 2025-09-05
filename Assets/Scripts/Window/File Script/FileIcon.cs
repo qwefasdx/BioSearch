@@ -1,8 +1,9 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class FileIcon : MonoBehaviour, IPointerClickHandler
+public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public TMP_Text fileNameText;
 
@@ -33,7 +34,7 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler
     public void SetSelected(bool selected)
     {
         if (fileNameText == null) return;
-        if (folder != null && folder.isAbnormal) return; // 이상 폴더 색상 유지
+        if (folder != null && folder.isAbnormal) return;
         fileNameText.color = selected ? selectedColor : normalColor;
     }
 
@@ -43,4 +44,27 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler
         if (eventData.clickCount == 2)
             fileWindow.OpenFolder(folder);
     }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        Debug.Log("드랍됨");
+        FileIcon dragged = eventData.pointerDrag?.GetComponent<FileIcon>();
+        if (dragged == null) return;
+
+        Folder source = dragged.GetFolder();
+        Folder target = folder;
+
+        if (source.parent != null)
+            source.parent.children.Remove(source);
+
+        target.children.Add(source);
+        source.parent = target;
+
+        fileWindow.OpenFolder(target, false);
+
+        // 드롭 직후 Ghost 제거 (EndDrag를 LateUpdate로 호출)
+        
+        FileDragManager.Instance.ForceEndDrag();
+    }
+
 }
