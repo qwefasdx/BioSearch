@@ -44,13 +44,18 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
         if (eventData.clickCount == 2)
             fileWindow.OpenFolder(folder);
     }
-
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("드랍됨");
         FileIcon dragged = eventData.pointerDrag?.GetComponent<FileIcon>();
         if (dragged == null) return;
 
+        // 1) FileDragManager의 OnEndDrag를 EventSystem 흐름으로 직접 호출
+        if (FileDragManager.Instance != null)
+        {
+            ExecuteEvents.Execute(FileDragManager.Instance.gameObject, eventData, ExecuteEvents.endDragHandler);
+        }
+
+        // 2) 폴더 이동 로직
         Folder source = dragged.GetFolder();
         Folder target = folder;
 
@@ -60,11 +65,15 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
         target.children.Add(source);
         source.parent = target;
 
-        fileWindow.OpenFolder(target, false);
+        // 3) UI 갱신은 다음 프레임으로 지연 이벤트 시스템이 정리될 시간 확보
+        fileWindow.StartCoroutine(OpenFolderNextFrame(target));
 
-        // 드롭 직후 Ghost 제거 (EndDrag를 LateUpdate로 호출)
-        
-        FileDragManager.Instance.ForceEndDrag();
+    }
+
+    private System.Collections.IEnumerator OpenFolderNextFrame(Folder target)
+    {
+        yield return null; // 한 프레임 대기
+        fileWindow.OpenFolder(target, false);
     }
 
 }

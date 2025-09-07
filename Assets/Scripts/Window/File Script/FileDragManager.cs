@@ -11,6 +11,9 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private GameObject ghostIcon;
     private Canvas mainCanvas;
 
+    // 현재 Drag 중인 Folder
+    public Folder CurrentDraggedFolder { get; private set; }
+
     void Awake()
     {
         Instance = this;
@@ -22,17 +25,16 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 드래그 시작
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("드래그 시작");
         draggingIcon = eventData.pointerDrag?.GetComponent<FileIcon>();
         if (draggingIcon == null) return;
 
+        CurrentDraggedFolder = draggingIcon.GetFolder();
         CreateGhost(eventData);
     }
 
     // 드래그 중
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("드래그중");
         if (ghostIcon != null)
             UpdateGhostPosition(eventData);
     }
@@ -40,25 +42,12 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 드래그 종료
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("종료시작");
         EndDrag();
     }
 
-    // 기존 EndDrag와 동일하지만 안전하게 호출 가능하도록 public
-    public void ForceEndDrag()
-    {
-        if (ghostIcon != null)
-        {
-            Debug.Log("종료");
-            Destroy(ghostIcon);
-            ghostIcon = null;
-        }
-        draggingIcon = null;
-    }
-
+    // Ghost 생성
     private void CreateGhost(PointerEventData eventData)
     {
-        // GhostIcon 생성
         ghostIcon = new GameObject("GhostIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         ghostIcon.transform.SetParent(mainCanvas.transform, false);
         ghostIcon.transform.SetAsLastSibling();
@@ -74,7 +63,6 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         rt.sizeDelta = new Vector2(120, 40);
         rt.pivot = new Vector2(0.5f, 0.5f);
 
-        // 텍스트 추가
         TextMeshProUGUI txt = new GameObject("GhostText", typeof(RectTransform), typeof(TextMeshProUGUI))
             .GetComponent<TextMeshProUGUI>();
         txt.text = draggingIcon.GetFolder().name;
@@ -92,6 +80,7 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         UpdateGhostPosition(eventData);
     }
 
+    // Ghost 위치 업데이트
     private void UpdateGhostPosition(PointerEventData eventData)
     {
         Camera cam = mainCanvas.worldCamera;
@@ -105,21 +94,27 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         ghostIcon.GetComponent<RectTransform>().position = worldPos;
     }
 
-    // 드래그 종료 시 즉시 Ghost 제거
-    public void EndDrag()
+    // 드래그 종료 시 Ghost 제거 및 상태 초기화
+    private void EndDrag()
     {
         if (ghostIcon != null)
         {
-            Debug.Log("종료");
             Destroy(ghostIcon);
             ghostIcon = null;
         }
         draggingIcon = null;
+        CurrentDraggedFolder = null;
+    }
+
+    // 강제 드래그 종료 (Drop 후 호출)
+    public void ForceEndDrag()
+    {
+        EndDrag();
     }
 
     void Update()
     {
-        // draggingIcon이 null인데 ghostIcon이 남아있으면 안전하게 제거
+        // 안전 장치: draggingIcon이 null인데 ghost가 남아있으면 제거
         if (ghostIcon != null && draggingIcon == null)
         {
             Destroy(ghostIcon);
