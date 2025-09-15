@@ -4,13 +4,13 @@ using TMPro;
 // FileIcon의 텍스트 색상을 이상 폴더 여부에 따라 자동 적용
 public class FileIconColorUpdater : MonoBehaviour
 {
-    private FileIcon fileIcon;
+    private FolderIcon fileIcon;
     private TMP_Text text;
     private GlobalColorManager gcm;
 
     void Awake()
     {
-        fileIcon = GetComponent<FileIcon>();
+        fileIcon = GetComponent<FolderIcon>();
         text = GetComponent<TMP_Text>();
         gcm = FindObjectOfType<GlobalColorManager>();
     }

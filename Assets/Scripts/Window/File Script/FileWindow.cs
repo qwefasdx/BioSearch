@@ -16,7 +16,7 @@ public class FileWindow : MonoBehaviour
     [Header("Back Button")]
     public Button backButton;
 
-    private FileIcon selectedIcon;
+    private FolderIcon selectedIcon;
     private Folder rootFolder;
     private Folder currentFolder;
     private Stack<Folder> folderHistory = new Stack<Folder>();
@@ -36,16 +36,31 @@ public class FileWindow : MonoBehaviour
         head.children.Add(new Folder("mouse", head));
         head.children.Add(new Folder("left eye", head));
         head.children.Add(new Folder("right eye", head));
+        head.children.Add(new Folder("nose", head));
+
+        Folder body = new Folder("body", rootFolder);
 
         Folder organ = new Folder("organ", rootFolder);
         organ.children.Add(new Folder("heart", organ));
 
+        Folder left_arm = new Folder("left arm", rootFolder);
+        left_arm.children.Add(new Folder("left hand", left_arm));
+        Folder right_arm = new Folder("right arm", rootFolder);
+        right_arm.children.Add(new Folder("right hand", right_arm));
+
+        Folder left_leg = new Folder("left leg", rootFolder);
+        left_leg.children.Add(new Folder("left foot", left_leg));
+        Folder right_leg = new Folder("right leg", rootFolder);
+        right_leg.children.Add(new Folder("right foot", right_leg));
+
+
         rootFolder.children.Add(head);
-        rootFolder.children.Add(new Folder("body", rootFolder));
-        rootFolder.children.Add(new Folder("leg", rootFolder));
-        rootFolder.children.Add(new Folder("arm", rootFolder));
-        rootFolder.children.Add(new Folder("hand", rootFolder));
+        rootFolder.children.Add(body);
         rootFolder.children.Add(organ);
+        rootFolder.children.Add(left_arm);
+        rootFolder.children.Add(right_arm);
+        rootFolder.children.Add(left_leg);
+        rootFolder.children.Add(right_leg);
 
         // 이상 폴더 랜덤 지정 + 하위 폴더 상속
         PickAbnormalFolderRecursive(rootFolder);
@@ -88,7 +103,7 @@ public class FileWindow : MonoBehaviour
         foreach (Folder child in folder.children)
         {
             GameObject iconObj = Instantiate(fileIconPrefab, contentArea);
-            FileIcon icon = iconObj.GetComponent<FileIcon>();
+            FolderIcon icon = iconObj.GetComponent<FolderIcon>();
             icon.Setup(child, this, folder.isAbnormal);
         }
 
@@ -99,7 +114,7 @@ public class FileWindow : MonoBehaviour
             pathPanelManager.UpdatePathButtons();
     }
 
-    public void SetSelectedIcon(FileIcon icon)
+    public void SetSelectedIcon(FolderIcon icon)
     {
         if (selectedIcon != null)
             selectedIcon.SetSelected(false);

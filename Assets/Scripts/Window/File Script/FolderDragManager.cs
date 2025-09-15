@@ -3,11 +3,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public static FileDragManager Instance;
+    public static FolderDragManager Instance;
 
-    private FileIcon draggingIcon;
+    private FolderIcon draggingIcon;
     private GameObject ghostIcon;
     private Canvas mainCanvas;
 
@@ -25,7 +25,7 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // 드래그 시작
     public void OnBeginDrag(PointerEventData eventData)
     {
-        draggingIcon = eventData.pointerDrag?.GetComponent<FileIcon>();
+        draggingIcon = eventData.pointerDrag?.GetComponent<FolderIcon>();
         if (draggingIcon == null) return;
 
         CurrentDraggedFolder = draggingIcon.GetFolder();
@@ -122,5 +122,5 @@ public class FileDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    public FileIcon GetDraggingIcon() => draggingIcon;
+    public FolderIcon GetDraggingIcon() => draggingIcon;
 }

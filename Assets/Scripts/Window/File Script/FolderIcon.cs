@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
+public class FolderIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     public TMP_Text fileNameText;
 
@@ -46,18 +46,26 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
     }
     public void OnDrop(PointerEventData eventData)
     {
-        FileIcon dragged = eventData.pointerDrag?.GetComponent<FileIcon>();
+        FolderIcon dragged = eventData.pointerDrag?.GetComponent<FolderIcon>();
         if (dragged == null) return;
 
         // 1) FileDragManager의 OnEndDrag를 EventSystem 흐름으로 직접 호출
-        if (FileDragManager.Instance != null)
+        if (FolderDragManager.Instance != null)
         {
-            ExecuteEvents.Execute(FileDragManager.Instance.gameObject, eventData, ExecuteEvents.endDragHandler);
+            ExecuteEvents.Execute(FolderDragManager.Instance.gameObject, eventData, ExecuteEvents.endDragHandler);
         }
 
         // 2) 폴더 이동 로직
         Folder source = dragged.GetFolder();
         Folder target = folder;
+
+        // 깊이 제한 확인
+        string warning;
+        if (!FolderDepthUtility.CanMove(source, target, out warning))
+        {
+            LogWindowManager.Instance.Log(warning);
+            return;
+        }
 
         if (source.parent != null)
             source.parent.children.Remove(source);
@@ -67,8 +75,8 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
 
         // 3) UI 갱신은 다음 프레임으로 지연 이벤트 시스템이 정리될 시간 확보
         fileWindow.StartCoroutine(OpenFolderNextFrame(target));
-
     }
+
 
     private System.Collections.IEnumerator OpenFolderNextFrame(Folder target)
     {

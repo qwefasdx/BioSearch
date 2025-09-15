@@ -61,21 +61,21 @@ public class PathPanelManager : MonoBehaviour
         Folder draggedFolder = null;
 
         // 1. FileDragManager에서 현재 드래그 중인 Folder 확인
-        if (FileDragManager.Instance.CurrentDraggedFolder != null)
+        if (FolderDragManager.Instance.CurrentDraggedFolder != null)
         {
-            draggedFolder = FileDragManager.Instance.CurrentDraggedFolder;
+            draggedFolder = FolderDragManager.Instance.CurrentDraggedFolder;
         }
         // 2. pointerDrag가 FileIcon이면 가져오기
         else if (eventData.pointerDrag != null)
         {
-            FileIcon icon = eventData.pointerDrag.GetComponent<FileIcon>();
+            FolderIcon icon = eventData.pointerDrag.GetComponent<FolderIcon>();
             if (icon != null)
                 draggedFolder = icon.GetFolder();
         }
 
         if (draggedFolder == null)
         {
-            Debug.LogWarning("드래그 중인 폴더를 찾을 수 없습니다.");
+            LogWindowManager.Instance.Log("드래그 중인 폴더를 찾을 수 없습니다.");
             return;
         }
 
@@ -90,10 +90,17 @@ public class PathPanelManager : MonoBehaviour
         {
             if (temp == draggedFolder)
             {
-                Debug.LogWarning("자신 또는 하위 폴더에는 드롭할 수 없습니다.");
+                LogWindowManager.Instance.Log("자신 또는 하위 폴더에는 드롭할 수 없습니다.");
                 return;
             }
             temp = temp.parent;
+        }
+
+        string warning;
+        if (!FolderDepthUtility.CanMove(draggedFolder, targetFolder, out warning))
+        {
+            LogWindowManager.Instance.Log(warning);
+            return;
         }
 
         // 기존 부모에서 제거
@@ -105,12 +112,11 @@ public class PathPanelManager : MonoBehaviour
         draggedFolder.parent = targetFolder;
 
         // Ghost 제거
-        FileDragManager.Instance.ForceEndDrag();
+        FolderDragManager.Instance.ForceEndDrag();
 
         // UI 갱신
         fileWindow.StartCoroutine(OpenFolderNextFrame(targetFolder));
     }
-
     private IEnumerator OpenFolderNextFrame(Folder folder)
     {
         yield return null; // 한 프레임 대기
