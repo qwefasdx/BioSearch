@@ -41,7 +41,7 @@ public static class FolderDepthUtility
 
         if (newDepth > 6)
         {
-            warningMessage = " 최대 깊이(6)를 초과할 수 없습니다.";
+            warningMessage = "Warning. 최대 깊이(6) 초과.";
             return false;
         }
 
