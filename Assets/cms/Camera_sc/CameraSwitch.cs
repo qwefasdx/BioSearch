@@ -2,12 +2,19 @@ using UnityEngine;
 
 public class CameraSwitch : MonoBehaviour
 {
+    // 스크립트 상단에 변수 추가
+    public Camera targetCamera;
+    public float defaultFOV = 60f;
+    public float zoomFOV = 40f;
+    public float transitionSpeed = 5f;
+
+    private float targetFOV;
+
     public Transform view1;     // 첫 번째 시점 (W)
     public Transform view2;     // 두 번째 시점 (S, 기본 시작점)
     public Transform leftView;  // S 상태일 때 왼쪽 (A)
     public Transform rightView; // S 상태일 때 오른쪽 (D)
 
-    public float transitionSpeed = 2f;
 
     private Transform currentView;
     private bool inView2 = false;   // 현재 S 시점인지
@@ -20,6 +27,9 @@ public class CameraSwitch : MonoBehaviour
         transform.position = view2.position;
         transform.rotation = view2.rotation;
         inView2 = true;
+        targetFOV = defaultFOV;
+        if (targetCamera == null)
+            targetCamera = GetComponent<Camera>();
     }
 
     void Update()
@@ -29,6 +39,7 @@ public class CameraSwitch : MonoBehaviour
         {
             currentView = view1;
             inView2 = false;
+            targetFOV = zoomFOV;
         }
 
         // S → view2 전환
@@ -37,7 +48,9 @@ public class CameraSwitch : MonoBehaviour
             currentView = view2;
             inView2 = true;
             mustPassThroughS = true; // S를 직접 누르면 다시 초기화
+            targetFOV = defaultFOV;
         }
+
 
         // S 상태일 때만 A, D 작동
         if (inView2)
@@ -74,5 +87,10 @@ public class CameraSwitch : MonoBehaviour
         // 카메라 부드럽게 이동/회전
         transform.position = Vector3.Lerp(transform.position, currentView.position, Time.deltaTime * transitionSpeed);
         transform.rotation = Quaternion.Lerp(transform.rotation, currentView.rotation, Time.deltaTime * transitionSpeed);
+
+        targetCamera.fieldOfView = Mathf.Lerp(
+        targetCamera.fieldOfView,
+        targetFOV,
+        Time.deltaTime * transitionSpeed);
     }
 }
