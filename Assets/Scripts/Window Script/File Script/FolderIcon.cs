@@ -4,14 +4,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary>
-/// UI 상에서 하나의 폴더 아이콘을 표현하고,
-/// 드래그/클릭 등 이벤트를 처리하는 클래스.
-/// </summary>
-public class FolderIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
+public class FolderIcon : MonoBehaviour, IPointerClickHandler, IDropHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public TMP_Text fileNameText;
-
     private FileWindow fileWindow;
     private Folder folder;
 
@@ -50,39 +46,77 @@ public class FolderIcon : MonoBehaviour, IPointerClickHandler, IDropHandler
             fileWindow.OpenFolder(folder);
     }
 
+    #region 드래그 구현
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.BeginDrag(this, eventData);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.OnDrag(eventData);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.EndDrag();
+    }
+
+    #endregion
+
     public void OnDrop(PointerEventData eventData)
     {
-        FolderIcon dragged = eventData.pointerDrag?.GetComponent<FolderIcon>();
-        if (dragged == null) return;
-
-        if (FolderDragManager.Instance != null)
-            ExecuteEvents.Execute(FolderDragManager.Instance.gameObject, eventData, ExecuteEvents.endDragHandler);
-
-        Folder source = dragged.GetFolder();
-        Folder target = folder;
-
-        string warning;
-        if (!FolderDepthUtility.CanMove(source, target, out warning))
+        // 1. 폴더 드롭
+        FolderIcon draggedFolderIcon = eventData.pointerDrag?.GetComponent<FolderIcon>();
+        if (draggedFolderIcon != null)
         {
-            LogWindowManager.Instance.Log(warning);
+            Folder source = draggedFolderIcon.GetFolder();
+            Folder target = folder;
+
+            string warning;
+            if (!FolderDepthUtility.CanMove(source, target, out warning))
+            {
+                LogWindowManager.Instance.Log(warning);
+                return;
+            }
+
+            if (source.parent != null)
+                source.parent.children.Remove(source);
+
+            target.children.Add(source);
+            source.parent = target;
+
+            LogWindowManager.Instance.Log($"폴더 '{source.name}' → '{target.name}' 이동됨");
+
+            FolderDragManager.Instance.ForceEndDrag();
+            fileWindow.StartCoroutine(OpenFolderNextFrame(target));
             return;
         }
 
-        if (source.parent != null)
-            source.parent.children.Remove(source);
+        // 2. 파일 드롭
+        FileIcon draggedFileIcon = eventData.pointerDrag?.GetComponent<FileIcon>();
+        if (draggedFileIcon != null)
+        {
+            File file = draggedFileIcon.GetFile();
+            Folder target = folder;
 
-        target.children.Add(source);
-        source.parent = target;
+            if (file.parent != null)
+                file.parent.files.Remove(file);
 
-        // 폴더 이동 로그
-        LogWindowManager.Instance.Log($"폴더 '{source.name}' → '{target.name}' 이동됨");
+            target.files.Add(file);
+            file.parent = target;
 
-        fileWindow.StartCoroutine(OpenFolderNextFrame(target));
+            LogWindowManager.Instance.Log($"파일 '{file.name}.{file.extension}' → '{target.name}' 이동됨");
+
+            FolderDragManager.Instance.ForceEndDrag();
+            fileWindow.RefreshWindow(); // 파일 이동 후 UI 갱신
+        }
     }
 
     private IEnumerator OpenFolderNextFrame(Folder target)
     {
-        yield return null; // 한 프레임 대기
+        yield return null;
         fileWindow.OpenFolder(target, false);
     }
 }

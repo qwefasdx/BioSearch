@@ -61,9 +61,9 @@ public class PathPanelManager : MonoBehaviour
         Folder draggedFolder = null;
 
         // 1. FolderDragManager에서 현재 드래그 중인 Folder 확인
-        if (FolderDragManager.Instance.CurrentDraggedFolder != null)
+        if (FolderDragManager.Instance.CurrentDraggedFolderIcon != null)
         {
-            draggedFolder = FolderDragManager.Instance.CurrentDraggedFolder;
+            draggedFolder = FolderDragManager.Instance.CurrentDraggedFolderIcon.GetFolder();
         }
         // 2. pointerDrag가 FolderIcon이면 가져오기
         else if (eventData.pointerDrag != null)
@@ -82,7 +82,6 @@ public class PathPanelManager : MonoBehaviour
         List<Folder> pathList = fileWindow.GetCurrentPathList();
         if (index < 0 || index >= pathList.Count) return;
 
-        // 기존 target 변수 선언
         Folder targetFolder = pathList[index];
 
         // 자기 자신이나 하위 폴더로 드롭 방지
@@ -113,7 +112,7 @@ public class PathPanelManager : MonoBehaviour
         draggedFolder.parent = targetFolder;
 
         // Ghost 제거
-        FolderDragManager.Instance.ForceEndDrag();
+        FolderDragManager.Instance.EndDrag(); // <- ForceEndDrag → EndDrag
 
         // 로그 출력
         LogWindowManager.Instance.Log($"폴더 '{draggedFolder.name}' → '{targetFolder.name}' 이동됨");
@@ -121,7 +120,6 @@ public class PathPanelManager : MonoBehaviour
         // UI 갱신
         fileWindow.StartCoroutine(OpenFolderNextFrame(targetFolder));
     }
-
     private IEnumerator OpenFolderNextFrame(Folder folder)
     {
         yield return null; // 한 프레임 대기

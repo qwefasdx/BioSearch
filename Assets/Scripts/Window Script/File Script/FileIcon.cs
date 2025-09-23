@@ -1,12 +1,9 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-/// <summary>
-/// 파일 아이콘의 공통 동작 (이 클래스는 직접 사용하지 않고 상속해서 TxtIcon, PngIcon을 만듦)
-/// </summary>
-public abstract class FileIcon : MonoBehaviour, IPointerClickHandler
+public abstract class FileIcon : MonoBehaviour, IPointerClickHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public TMP_Text fileNameText;
 
@@ -43,6 +40,24 @@ public abstract class FileIcon : MonoBehaviour, IPointerClickHandler
             OnDoubleClick();
     }
 
-    // 더블 클릭 시 동작 (확장자별로 구현)
     protected abstract void OnDoubleClick();
+
+    #region 드래그 구현
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.BeginDrag(this, eventData);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.OnDrag(eventData);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        FolderDragManager.Instance.EndDrag();
+    }
+
+    #endregion
 }

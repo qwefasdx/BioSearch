@@ -207,4 +207,16 @@ public class FileWindow : MonoBehaviour
         Folder previous = folderHistory.Pop();
         OpenFolder(previous, false);
     }
+    public void RefreshFolder(Folder folder)
+    {
+        OpenFolder(folder, false); // 열려있는 폴더 다시 표시
+    }
+    public void RefreshWindow()
+    {
+        // 현재 열려 있는 폴더 UI를 다시 그리기
+        if (currentFolder != null)
+        {
+            OpenFolder(currentFolder, false);
+        }
+    }
 }
