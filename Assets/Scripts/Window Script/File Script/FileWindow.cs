@@ -3,10 +3,17 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
+/// <summary>
+/// 폴더와 파일을 표시하고 탐색하는 UI 창
+/// </summary>
 public class FileWindow : MonoBehaviour
 {
+    [Header("Prefabs")]
+    public GameObject folderIconPrefab;
+    public GameObject txtIconPrefab;
+    public GameObject pngIconPrefab;
+
     [Header("Scroll Area")]
-    public GameObject fileIconPrefab;
     public Transform contentArea;
     public TMP_Text emptyText;
 
@@ -16,10 +23,15 @@ public class FileWindow : MonoBehaviour
     [Header("Back Button")]
     public Button backButton;
 
-    private FolderIcon selectedIcon;
+    private FolderIcon selectedFolderIcon;
+    private FileIcon selectedFileIcon;
+
     private Folder rootFolder;
     private Folder currentFolder;
     private Stack<Folder> folderHistory = new Stack<Folder>();
+
+    // 현재 폴더 안의 파일들
+    private List<File> currentFolderFiles = new List<File>();
 
     void Awake()
     {
@@ -60,6 +72,10 @@ public class FileWindow : MonoBehaviour
         rootFolder.children.Add(LeftLeg);
         rootFolder.children.Add(RightLeg);
 
+        // 테스트용 파일 추가
+        currentFolderFiles.Add(new File("Readme", "txt", rootFolder));
+        currentFolderFiles.Add(new File("ImageSample", "png", rootFolder));
+
         // 이상 폴더 확률 설정 (0~1)
         AssignAbnormalParameters(rootFolder);
 
@@ -86,6 +102,9 @@ public class FileWindow : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 폴더 열기
+    /// </summary>
     public void OpenFolder(Folder folder, bool recordPrevious = true)
     {
         if (recordPrevious && currentFolder != null && folder != currentFolder)
@@ -96,14 +115,37 @@ public class FileWindow : MonoBehaviour
         foreach (Transform child in contentArea)
             Destroy(child.gameObject);
 
-        selectedIcon = null;
-        emptyText.gameObject.SetActive(folder.children.Count == 0);
+        selectedFolderIcon = null;
+        selectedFileIcon = null;
 
+        bool hasContent = (folder.children.Count > 0) || HasFilesInFolder(folder);
+        emptyText.gameObject.SetActive(!hasContent);
+
+        // 폴더 아이콘 생성
         foreach (Folder child in folder.children)
         {
-            GameObject iconObj = Instantiate(fileIconPrefab, contentArea);
+            GameObject iconObj = Instantiate(folderIconPrefab, contentArea);
             FolderIcon icon = iconObj.GetComponent<FolderIcon>();
             icon.Setup(child, this, child.isAbnormal);
+        }
+
+        // 파일 아이콘 생성
+        foreach (File file in currentFolderFiles)
+        {
+            if (file.parent != folder) continue;
+
+            GameObject prefab = null;
+
+            if (file.extension == "txt")
+                prefab = txtIconPrefab;
+            else if (file.extension == "png")
+                prefab = pngIconPrefab;
+
+            if (prefab == null) continue;
+
+            GameObject iconObj = Instantiate(prefab, contentArea);
+            FileIcon icon = iconObj.GetComponent<FileIcon>();
+            icon.Setup(file, this);
         }
 
         if (backButton != null)
@@ -113,13 +155,31 @@ public class FileWindow : MonoBehaviour
             pathPanelManager.UpdatePathButtons();
     }
 
+    private bool HasFilesInFolder(Folder folder)
+    {
+        foreach (var f in currentFolderFiles)
+        {
+            if (f.parent == folder) return true;
+        }
+        return false;
+    }
+
     public void SetSelectedIcon(FolderIcon icon)
     {
-        if (selectedIcon != null)
-            selectedIcon.SetSelected(false);
+        if (selectedFolderIcon != null)
+            selectedFolderIcon.SetSelected(false);
 
-        selectedIcon = icon;
-        selectedIcon.SetSelected(true);
+        selectedFolderIcon = icon;
+        selectedFolderIcon.SetSelected(true);
+    }
+
+    public void SetSelectedFileIcon(FileIcon icon)
+    {
+        if (selectedFileIcon != null)
+            selectedFileIcon.SetSelected(false);
+
+        selectedFileIcon = icon;
+        selectedFileIcon.SetSelected(true);
     }
 
     public List<Folder> GetCurrentPathList()

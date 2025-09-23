@@ -95,7 +95,7 @@ public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler,
     }
 
     // 드래그 종료 시 Ghost 제거 및 상태 초기화
-    private void EndDrag()
+    public void EndDrag()
     {
         if (ghostIcon != null)
         {

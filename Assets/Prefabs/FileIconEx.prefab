@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3401691061939007660}
   - component: {fileID: 4826558003796107410}
   - component: {fileID: 3384979227035279951}
-  - component: {fileID: 7316595533712124283}
+  - component: {fileID: 1201927580563641404}
   m_Layer: 5
   m_Name: FileIconEx
   m_TagString: Untagged
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7316595533712124283
+--- !u!114 &1201927580563641404
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
