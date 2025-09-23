@@ -114,9 +114,14 @@ public class PathPanelManager : MonoBehaviour
         // Ghost 제거
         FolderDragManager.Instance.ForceEndDrag();
 
-        // UI 갱신
+        // 로그 출력
+        LogWindowManager.Instance.Log($"폴더 '{draggedFolder.name}' → '{targetFolder.name}' 이동됨");
+
+        // Ghost 제거 및 UI 갱신
+        FolderDragManager.Instance.ForceEndDrag();
         fileWindow.StartCoroutine(OpenFolderNextFrame(targetFolder));
     }
+
     private IEnumerator OpenFolderNextFrame(Folder folder)
     {
         yield return null; // 한 프레임 대기
