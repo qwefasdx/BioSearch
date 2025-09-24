@@ -71,9 +71,14 @@ public class FileWindow : MonoBehaviour
         rootFolder.children.Add(LeftLeg);
         rootFolder.children.Add(RightLeg);
 
-        // 테스트용 파일 추가
-        currentFolderFiles.Add(new File("Readme", "txt", rootFolder));
-        currentFolderFiles.Add(new File("ImageSample", "png", rootFolder));
+        // 변경
+        File file1 = new File("Readme", "txt", rootFolder);
+        currentFolderFiles.Add(file1);
+        rootFolder.files.Add(file1);
+
+        File file2 = new File("ImageSample", "png", rootFolder);
+        currentFolderFiles.Add(file2);
+        rootFolder.files.Add(file2);
 
         // 이상 폴더 확률 설정 (0~1)
         AssignAbnormalParameters(rootFolder);

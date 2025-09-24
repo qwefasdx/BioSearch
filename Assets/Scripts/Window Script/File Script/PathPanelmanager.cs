@@ -59,6 +59,7 @@ public class PathPanelManager : MonoBehaviour
     private void OnPathDrop(int index, PointerEventData eventData)
     {
         Folder draggedFolder = null;
+        File draggedFile = null;
 
         // 1. FolderDragManager에서 현재 드래그 중인 Folder 확인
         if (FolderDragManager.Instance.CurrentDraggedFolderIcon != null)
@@ -68,15 +69,16 @@ public class PathPanelManager : MonoBehaviour
         // 2. pointerDrag가 FolderIcon이면 가져오기
         else if (eventData.pointerDrag != null)
         {
-            FolderIcon icon = eventData.pointerDrag.GetComponent<FolderIcon>();
-            if (icon != null)
-                draggedFolder = icon.GetFolder();
-        }
-
-        if (draggedFolder == null)
-        {
-            LogWindowManager.Instance.Log("드래그 중인 폴더를 찾을 수 없습니다.");
-            return;
+            FolderIcon folderIcon = eventData.pointerDrag.GetComponent<FolderIcon>();
+            if (folderIcon != null)
+                draggedFolder = folderIcon.GetFolder();
+            else
+            {
+                // pointerDrag가 FileIcon이면 가져오기
+                FileIcon fileIcon = eventData.pointerDrag.GetComponent<FileIcon>();
+                if (fileIcon != null)
+                    draggedFile = fileIcon.GetFile();
+            }
         }
 
         List<Folder> pathList = fileWindow.GetCurrentPathList();
@@ -84,42 +86,56 @@ public class PathPanelManager : MonoBehaviour
 
         Folder targetFolder = pathList[index];
 
-        // 자기 자신이나 하위 폴더로 드롭 방지
-        Folder temp = targetFolder;
-        while (temp != null)
+        // 폴더 이동 처리
+        if (draggedFolder != null)
         {
-            if (temp == draggedFolder)
+            // 자기 자신이나 하위 폴더로 드롭 방지
+            Folder temp = targetFolder;
+            while (temp != null)
             {
-                LogWindowManager.Instance.Log("자신 또는 하위 폴더에는 드롭할 수 없습니다.");
+                if (temp == draggedFolder)
+                {
+                    LogWindowManager.Instance.Log("자신 또는 하위 폴더에는 드롭할 수 없습니다.");
+                    return;
+                }
+                temp = temp.parent;
+            }
+
+            string warning;
+            if (!FolderDepthUtility.CanMove(draggedFolder, targetFolder, out warning))
+            {
+                LogWindowManager.Instance.Log(warning);
                 return;
             }
-            temp = temp.parent;
-        }
 
-        string warning;
-        if (!FolderDepthUtility.CanMove(draggedFolder, targetFolder, out warning))
+            // 기존 부모에서 제거
+            if (draggedFolder.parent != null)
+                draggedFolder.parent.children.Remove(draggedFolder);
+
+            // 새 부모에 추가
+            targetFolder.children.Add(draggedFolder);
+            draggedFolder.parent = targetFolder;
+
+            FolderDragManager.Instance.EndDrag();
+            LogWindowManager.Instance.Log($"폴더 '{draggedFolder.name}' → '{targetFolder.name}' 이동됨");
+        }
+        // 파일 이동 처리
+        else if (draggedFile != null)
         {
-            LogWindowManager.Instance.Log(warning);
-            return;
+            if (draggedFile.parent != null)
+                draggedFile.parent.files.Remove(draggedFile); // 기존 부모 폴더에서 제거
+
+            draggedFile.parent = targetFolder;
+            targetFolder.files.Add(draggedFile);
+
+            FolderDragManager.Instance.EndDrag();
+            LogWindowManager.Instance.Log($"파일 '{draggedFile.name}' → '{targetFolder.name}' 이동됨");
         }
-
-        // 기존 부모에서 제거
-        if (draggedFolder.parent != null)
-            draggedFolder.parent.children.Remove(draggedFolder);
-
-        // 새 부모에 추가
-        targetFolder.children.Add(draggedFolder);
-        draggedFolder.parent = targetFolder;
-
-        // Ghost 제거
-        FolderDragManager.Instance.EndDrag(); // <- ForceEndDrag → EndDrag
-
-        // 로그 출력
-        LogWindowManager.Instance.Log($"폴더 '{draggedFolder.name}' → '{targetFolder.name}' 이동됨");
 
         // UI 갱신
         fileWindow.StartCoroutine(OpenFolderNextFrame(targetFolder));
     }
+
     private IEnumerator OpenFolderNextFrame(Folder folder)
     {
         yield return null; // 한 프레임 대기
