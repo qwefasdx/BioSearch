@@ -10,6 +10,7 @@ public class Folder
 {
     public string name;
     public List<Folder> children = new List<Folder>();
+    public List<File> files = new List<File>();   // 파일 리스트 추가
     public Folder parent;
 
     // 이상 폴더 여부
@@ -47,6 +48,26 @@ public class Folder
         {
             children.Remove(child);
             child.parent = null;
+        }
+    }
+
+    // 파일 추가
+    public void AddFile(File file)
+    {
+        if (!files.Contains(file))
+        {
+            files.Add(file);
+            file.parent = this;
+        }
+    }
+
+    // 파일 제거
+    public void RemoveFile(File file)
+    {
+        if (files.Contains(file))
+        {
+            files.Remove(file);
+            file.parent = null;
         }
     }
 }

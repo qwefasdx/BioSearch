@@ -1,18 +1,17 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class FolderDragManager : MonoBehaviour
 {
     public static FolderDragManager Instance;
 
-    private FolderIcon draggingIcon;
     private GameObject ghostIcon;
     private Canvas mainCanvas;
 
-    // 현재 Drag 중인 Folder
-    public Folder CurrentDraggedFolder { get; private set; }
+    public FolderIcon CurrentDraggedFolderIcon { get; private set; }
+    public FileIcon CurrentDraggedFileIcon { get; private set; }
 
     void Awake()
     {
@@ -22,31 +21,53 @@ public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler,
             Debug.LogError("씬에 Canvas 필요!");
     }
 
-    // 드래그 시작
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        draggingIcon = eventData.pointerDrag?.GetComponent<FolderIcon>();
-        if (draggingIcon == null) return;
+    #region 드래그 통제
 
-        CurrentDraggedFolder = draggingIcon.GetFolder();
-        CreateGhost(eventData);
+    public void BeginDrag(FolderIcon folderIcon, PointerEventData eventData)
+    {
+        CurrentDraggedFolderIcon = folderIcon;
+        CurrentDraggedFileIcon = null;
+        CreateGhost(folderIcon.GetFolder().name, eventData);
     }
 
-    // 드래그 중
+    public void BeginDrag(FileIcon fileIcon, PointerEventData eventData)
+    {
+        CurrentDraggedFolderIcon = null;
+        CurrentDraggedFileIcon = fileIcon;
+        CreateGhost($"{fileIcon.GetFile().name}.{fileIcon.GetFile().extension}", eventData);
+    }
+
     public void OnDrag(PointerEventData eventData)
     {
         if (ghostIcon != null)
             UpdateGhostPosition(eventData);
     }
 
-    // 드래그 종료
-    public void OnEndDrag(PointerEventData eventData)
+    public void EndDrag()
     {
-        EndDrag();
+        DestroyGhost();
     }
 
-    // Ghost 생성
-    private void CreateGhost(PointerEventData eventData)
+    public void ForceEndDrag()
+    {
+        DestroyGhost();
+    }
+
+    private void DestroyGhost()
+    {
+        if (ghostIcon != null)
+            Destroy(ghostIcon);
+
+        ghostIcon = null;
+        CurrentDraggedFolderIcon = null;
+        CurrentDraggedFileIcon = null;
+    }
+
+    #endregion
+
+    #region Ghost 생성/위치
+
+    private void CreateGhost(string name, PointerEventData eventData)
     {
         ghostIcon = new GameObject("GhostIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         ghostIcon.transform.SetParent(mainCanvas.transform, false);
@@ -56,16 +77,13 @@ public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler,
         img.color = new Color(1, 1, 1, 0.5f);
         img.raycastTarget = false;
 
-        CanvasGroup group = ghostIcon.AddComponent<CanvasGroup>();
-        group.blocksRaycasts = false;
-
         RectTransform rt = ghostIcon.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(120, 40);
         rt.pivot = new Vector2(0.5f, 0.5f);
 
         TextMeshProUGUI txt = new GameObject("GhostText", typeof(RectTransform), typeof(TextMeshProUGUI))
             .GetComponent<TextMeshProUGUI>();
-        txt.text = draggingIcon.GetFolder().name;
+        txt.text = name;
         txt.fontSize = 24;
         txt.color = Color.yellow;
         txt.alignment = TextAlignmentOptions.Center;
@@ -80,7 +98,6 @@ public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler,
         UpdateGhostPosition(eventData);
     }
 
-    // Ghost 위치 업데이트
     private void UpdateGhostPosition(PointerEventData eventData)
     {
         Camera cam = mainCanvas.worldCamera;
@@ -94,33 +111,5 @@ public class FolderDragManager : MonoBehaviour, IBeginDragHandler, IDragHandler,
         ghostIcon.GetComponent<RectTransform>().position = worldPos;
     }
 
-    // 드래그 종료 시 Ghost 제거 및 상태 초기화
-    private void EndDrag()
-    {
-        if (ghostIcon != null)
-        {
-            Destroy(ghostIcon);
-            ghostIcon = null;
-        }
-        draggingIcon = null;
-        CurrentDraggedFolder = null;
-    }
-
-    // 강제 드래그 종료 (Drop 후 호출)
-    public void ForceEndDrag()
-    {
-        EndDrag();
-    }
-
-    void Update()
-    {
-        // 안전 장치: draggingIcon이 null인데 ghost가 남아있으면 제거
-        if (ghostIcon != null && draggingIcon == null)
-        {
-            Destroy(ghostIcon);
-            ghostIcon = null;
-        }
-    }
-
-    public FolderIcon GetDraggingIcon() => draggingIcon;
+    #endregion
 }

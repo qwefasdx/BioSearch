@@ -29,7 +29,7 @@ public class PathPanelManager : MonoBehaviour
 
         for (int i = 0; i < pathList.Count; i++)
         {
-            int index = i;
+            int index = i; // 클로저 문제 방지
             Button btn = Instantiate(pathButtonPrefab, contentArea);
             TMP_Text text = btn.GetComponentInChildren<TMP_Text>();
             text.text = pathList[i].name;
@@ -60,12 +60,12 @@ public class PathPanelManager : MonoBehaviour
     {
         Folder draggedFolder = null;
 
-        // 1. FileDragManager에서 현재 드래그 중인 Folder 확인
-        if (FolderDragManager.Instance.CurrentDraggedFolder != null)
+        // 1. FolderDragManager에서 현재 드래그 중인 Folder 확인
+        if (FolderDragManager.Instance.CurrentDraggedFolderIcon != null)
         {
-            draggedFolder = FolderDragManager.Instance.CurrentDraggedFolder;
+            draggedFolder = FolderDragManager.Instance.CurrentDraggedFolderIcon.GetFolder();
         }
-        // 2. pointerDrag가 FileIcon이면 가져오기
+        // 2. pointerDrag가 FolderIcon이면 가져오기
         else if (eventData.pointerDrag != null)
         {
             FolderIcon icon = eventData.pointerDrag.GetComponent<FolderIcon>();
@@ -112,16 +112,14 @@ public class PathPanelManager : MonoBehaviour
         draggedFolder.parent = targetFolder;
 
         // Ghost 제거
-        FolderDragManager.Instance.ForceEndDrag();
+        FolderDragManager.Instance.EndDrag(); // <- ForceEndDrag → EndDrag
 
         // 로그 출력
         LogWindowManager.Instance.Log($"폴더 '{draggedFolder.name}' → '{targetFolder.name}' 이동됨");
 
-        // Ghost 제거 및 UI 갱신
-        FolderDragManager.Instance.ForceEndDrag();
+        // UI 갱신
         fileWindow.StartCoroutine(OpenFolderNextFrame(targetFolder));
     }
-
     private IEnumerator OpenFolderNextFrame(Folder folder)
     {
         yield return null; // 한 프레임 대기
