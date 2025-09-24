@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class TxtIcon : FileIcon
 {
@@ -8,4 +8,4 @@ public class TxtIcon : FileIcon
         PopupManager.Instance.OpenFile(file);
         // TODO: 텍스트 뷰어 연결
     }
-}
+}*/

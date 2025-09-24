@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // TMP_InputField 사용
 using System.Collections;
 
 public class CameraSwitcher : MonoBehaviour
@@ -7,7 +8,8 @@ public class CameraSwitcher : MonoBehaviour
     public Camera camera1;   // 1번 카메라
     public Camera camera2;   // 2번 카메라
 
-    public Canvas targetCanvas; // 클릭 제한을 적용할 Canvas
+    public Canvas targetCanvas;      // 클릭 제한을 적용할 Canvas
+    public TMP_InputField targetInputField; // 입력 감지할 TMP_InputField
 
     private Camera activeCamera;
     private bool isSwitching = false;
@@ -26,6 +28,10 @@ public class CameraSwitcher : MonoBehaviour
     void Update()
     {
         if (isSwitching) return;
+
+        // TMP_InputField에 포커스가 있을 때는 키 입력 무시
+        if (targetInputField != null && targetInputField.isFocused)
+            return;
 
         if (activeCamera == camera1 && Input.GetKeyDown(KeyCode.W))
         {

@@ -35,6 +35,10 @@ public class LogWindowManager : MonoBehaviour
     public delegate void ScanCommandHandler(string fileName);
     public event ScanCommandHandler OnScanCommandEntered;
 
+    // extense 명령어 이벤트
+    public delegate void ExtenseCommandHandler(string args);
+    public event ExtenseCommandHandler OnExtenseCommandEntered;
+
     // 메시지 큐 (타이핑 효과를 위해 사용)
     private readonly Queue<string> messageQueue = new Queue<string>();
     private bool isTyping = false;
@@ -148,9 +152,14 @@ public class LogWindowManager : MonoBehaviour
             string fileName = command.Substring(5).Trim();
             OnScanCommandEntered?.Invoke(fileName);
         }
+        else if (command.StartsWith("extense "))
+        {
+            string args = command.Substring(8).Trim(); // "파일명 확장자"
+            OnExtenseCommandEntered?.Invoke(args);
+        }
         else if (command == "help")
         {
-            Log("사용 가능한 명령어: scan [파일명], help, clear");
+            Log("사용 가능한 명령어: scan [파일명], extense [파일명] [새 확장자], help, clear");
         }
         else if (command == "clear")
         {

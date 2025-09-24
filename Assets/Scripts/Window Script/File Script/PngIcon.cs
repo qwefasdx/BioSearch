@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class PngIcon : FileIcon
 {
@@ -8,4 +8,4 @@ public class PngIcon : FileIcon
         PopupManager.Instance.OpenFile(file);
         // TODO: 이미지 뷰어 연결
     }
-}
+}*/

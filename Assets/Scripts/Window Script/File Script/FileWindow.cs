@@ -9,9 +9,8 @@ using System.Collections.Generic;
 public class FileWindow : MonoBehaviour
 {
     [Header("Prefabs")]
-    public GameObject folderIconPrefab;
-    public GameObject txtIconPrefab;
-    public GameObject pngIconPrefab;
+    public GameObject folderIconPrefab;   // 폴더 프리팹
+    public GameObject fileIconPrefab;     // 파일 프리팹 (공용)
 
     [Header("Scroll Area")]
     public Transform contentArea;
@@ -129,21 +128,12 @@ public class FileWindow : MonoBehaviour
             icon.Setup(child, this, child.isAbnormal);
         }
 
-        // 파일 아이콘 생성
+        // 파일 아이콘 생성 (공용 프리팹 사용)
         foreach (File file in currentFolderFiles)
         {
             if (file.parent != folder) continue;
 
-            GameObject prefab = null;
-
-            if (file.extension == "txt")
-                prefab = txtIconPrefab;
-            else if (file.extension == "png")
-                prefab = pngIconPrefab;
-
-            if (prefab == null) continue;
-
-            GameObject iconObj = Instantiate(prefab, contentArea);
+            GameObject iconObj = Instantiate(fileIconPrefab, contentArea);
             FileIcon icon = iconObj.GetComponent<FileIcon>();
             icon.Setup(file, this);
         }
@@ -207,16 +197,15 @@ public class FileWindow : MonoBehaviour
         Folder previous = folderHistory.Pop();
         OpenFolder(previous, false);
     }
+
     public void RefreshFolder(Folder folder)
     {
         OpenFolder(folder, false); // 열려있는 폴더 다시 표시
     }
+
     public void RefreshWindow()
     {
-        // 현재 열려 있는 폴더 UI를 다시 그리기
         if (currentFolder != null)
-        {
             OpenFolder(currentFolder, false);
-        }
     }
 }
