@@ -1,16 +1,21 @@
 using UnityEngine;
-
-[System.Serializable]
 public class File
 {
     public string name;
-    public string extension; // "txt" 肚绰 "png"
+    public string extension;
     public Folder parent;
 
-    public File(string name, string extension, Folder parent = null)
+    // 颇老 能刨明
+    public string textContent;   // txt老 版快
+    public Sprite imageContent;  // png老 版快
+
+    public File(string name, string extension, Folder parent, string textContent = null, Sprite imageContent = null)
     {
         this.name = name;
         this.extension = extension;
         this.parent = parent;
+        this.textContent = textContent;
+        this.imageContent = imageContent;
     }
+
 }
