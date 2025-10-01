@@ -51,37 +51,32 @@ public class ScanCommandManager : MonoBehaviour
     private IEnumerator ScanFolderCoroutine(Folder folder)
     {
         isScanning = true;
-        logWindow.DisableInput();
+        logWindow.DisableInput(); // 입력 비활성화
 
-        int totalItems = CountAllFilesAndFolders(folder);
-        int totalFiles = CountAllFilesOnly(folder); // 하위 파일만 계산
+
+        int totalItems = CountAllFilesAndFolders(folder); // 폴더 + 파일 총합
         int progressBarLength = 10;
 
-        float itemsPerBar = totalItems / (float)progressBarLength;
-        float timePerBar = itemsPerBar * totalFiles * 2f; // 2초 * 하위 파일 개수
+        float timePerBar = totalItems * 1f; // 1초 * totalItems → 한 칸 차는 시간
+        int abnormalCount = CountAbnormal(folder);
 
+        // 초기 빈 진행 바 출력 (새 로그)
         logWindow.Log($"이상 스캔중 {new string('ㅁ', progressBarLength)}");
 
-        for (int i = 1; i <= progressBarLength; i++)
+        for (int i = 0; i < progressBarLength; i++)
         {
-            yield return new WaitForSeconds(timePerBar);
-            string progress = new string('■', i) + new string('ㅁ', progressBarLength - i);
-            logWindow.ReplaceLastLog($"이상 스캔중 {progress}");
+            yield return new WaitForSeconds(timePerBar); // 한 칸씩 기다림
+
+            // 한 칸 차오른 진행바
+            string progress = new string('■', i + 1) + new string('ㅁ', progressBarLength - i - 1);
+            logWindow.ReplaceLastScanLog($"이상 스캔중 {progress}");
         }
 
-        int abnormalCount = CountAbnormal(folder);
-        logWindow.ReplaceLastLog($"스캔 완료: 이상 {abnormalCount}개 발견됨.");
+        logWindow.ReplaceLastScanLog($"스캔 완료: 이상 {abnormalCount}개 발견됨.");
+ 
 
-        logWindow.EnableInput();
+        logWindow.EnableInput(); // 입력 재활성화
         isScanning = false;
-    }
-
-    private int CountAllFilesOnly(Folder folder)
-    {
-        int count = folder.files.Count;
-        foreach (var child in folder.children)
-            count += CountAllFilesOnly(child);
-        return count;
     }
 
 

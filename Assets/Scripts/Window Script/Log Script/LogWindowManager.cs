@@ -166,12 +166,22 @@ public class LogWindowManager : MonoBehaviour
     /// <summary>
     /// 마지막 로그 한 줄 교체
     /// </summary>
-    public void ReplaceLastLog(string message)
+    public void ReplaceLastScanLog(string message)
     {
         if (lines == null || lines.Length == 0) return;
 
-        lines[(currentLine - 1 + maxLines) % maxLines] = message;
+        // 역순으로 탐색해서 "이상 스캔중"으로 시작하는 마지막 로그 찾기
+        for (int i = currentLine - 1; i >= 0; i--)
+        {
+            int index = (i + maxLines) % maxLines;
+            if (lines[index].StartsWith("> 이상 스캔중"))
+            {
+                lines[index] = "> " + message; // 갱신
+                break;
+            }
+        }
 
+        // 전체 텍스트 갱신
         sb.Clear();
         int start = Mathf.Max(0, currentLine - maxLines);
         for (int i = start; i < currentLine; i++)
@@ -179,6 +189,7 @@ public class LogWindowManager : MonoBehaviour
 
         logText.text = sb.ToString();
     }
+
 
     /// <summary>
     /// 입력 필드 비활성화
