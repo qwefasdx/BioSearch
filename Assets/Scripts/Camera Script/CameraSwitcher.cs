@@ -33,7 +33,7 @@ public class CameraSwitcher : MonoBehaviour
         if (targetInputField != null && targetInputField.isFocused)
             return;
 
-        // W 키 눌림 감지
+        // W 키 → camera1 → camera2 전환
         if (activeCamera == camera1)
         {
             if (Input.GetKeyDown(KeyCode.W))
@@ -48,14 +48,14 @@ public class CameraSwitcher : MonoBehaviour
                 wPressed = false;
             }
 
-            // W 누른 후 다른 키나 마우스 입력 시 타이머 초기화
+            // 다른 키 입력 시 초기화
             if (wPressed && (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.W)))
             {
                 wPressed = false;
             }
         }
 
-        // S 키는 그대로 즉시 전환
+        // S 키 → camera2 → camera1 전환
         if (activeCamera == camera2 && Input.GetKeyDown(KeyCode.S))
         {
             SwitchFrom2To1();
@@ -66,7 +66,7 @@ public class CameraSwitcher : MonoBehaviour
     {
         isSwitching = true;
 
-        yield return null; // 지연 없이 바로 전환 (원하면 추가 대기 가능)
+        yield return null; // 지연 없이 바로 전환 가능
 
         SetCameraState(camera1, false);
         SetCameraState(camera2, true);

@@ -51,7 +51,6 @@ public class CameraSwitch : MonoBehaviour
             {
                 currentView = view2;
                 inView2 = true;
-                mustPassThroughS = true; // S를 직접 누르면 다시 초기화
                 targetFOV = defaultFOV;
             }
         }
@@ -59,36 +58,14 @@ public class CameraSwitch : MonoBehaviour
         // S 상태일 때만 A, D 작동
         if (inView2)
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A) && currentView != leftView)
             {
-                if (currentView == leftView) return; // 이미 A시점이면 무시
-
-                if (!mustPassThroughS)
-                {
-                    currentView = view2;   // 먼저 S로 이동
-                    mustPassThroughS = true;
-                }
-                else
-                {
-                    currentView = leftView;
-                    mustPassThroughS = false; // 리셋
-                }
+                currentView = leftView; // 바로 왼쪽 시점으로 이동
             }
 
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D) && currentView != rightView)
             {
-                if (currentView == rightView) return; // 이미 D시점이면 무시
-
-                if (!mustPassThroughS)
-                {
-                    currentView = view2;
-                    mustPassThroughS = true;
-                }
-                else
-                {
-                    currentView = rightView;
-                    mustPassThroughS = false;
-                }
+                currentView = rightView; // 바로 오른쪽 시점으로 이동
             }
         }
 
@@ -112,4 +89,5 @@ public class CameraSwitch : MonoBehaviour
             Time.deltaTime * transitionSpeed
         );
     }
+
 }
