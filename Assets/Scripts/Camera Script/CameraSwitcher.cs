@@ -1,27 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // TMP_InputField 사용
+using TMPro;
 using System.Collections;
 
 public class CameraSwitcher : MonoBehaviour
 {
-    public Camera camera1;   // 1번 카메라
-    public Camera camera2;   // 2번 카메라
+    public Camera camera1;
+    public Camera camera2;
 
-    public Canvas targetCanvas;      // 클릭 제한을 적용할 Canvas
-    public TMP_InputField targetInputField; // 입력 감지할 TMP_InputField
+    public Canvas targetCanvas;
+    public TMP_InputField targetInputField;
 
     private Camera activeCamera;
     private bool isSwitching = false;
 
+    private float wPressedTime = 0f;
+    private bool wPressed = false;
+    public float switchDelay = 1.5f; // W 누른 후 대기 시간
+
     void Start()
     {
-        // 시작 시 1번 카메라 활성화, 2번은 비활성화
         SetCameraState(camera1, true);
         SetCameraState(camera2, false);
         activeCamera = camera1;
-
-        // 1번 카메라에서 UI 비활성화
         UpdateCanvasRaycast();
     }
 
@@ -29,15 +30,33 @@ public class CameraSwitcher : MonoBehaviour
     {
         if (isSwitching) return;
 
-        // TMP_InputField에 포커스가 있을 때는 키 입력 무시
         if (targetInputField != null && targetInputField.isFocused)
             return;
 
-        if (activeCamera == camera1 && Input.GetKeyDown(KeyCode.W))
+        // W 키 → camera1 → camera2 전환
+        if (activeCamera == camera1)
         {
-            StartCoroutine(SwitchFrom1To2());
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                wPressed = true;
+                wPressedTime = Time.time;
+            }
+
+            if (wPressed && Time.time - wPressedTime >= switchDelay)
+            {
+                StartCoroutine(SwitchFrom1To2());
+                wPressed = false;
+            }
+
+            // 다른 키 입력 시 초기화
+            if (wPressed && (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.W)))
+            {
+                wPressed = false;
+            }
         }
-        else if (activeCamera == camera2 && Input.GetKeyDown(KeyCode.S))
+
+        // S 키 → camera2 → camera1 전환
+        if (activeCamera == camera2 && Input.GetKeyDown(KeyCode.S))
         {
             SwitchFrom2To1();
         }
@@ -47,13 +66,11 @@ public class CameraSwitcher : MonoBehaviour
     {
         isSwitching = true;
 
-        yield return new WaitForSeconds(3f);
+        yield return null; // 지연 없이 바로 전환 가능
 
         SetCameraState(camera1, false);
         SetCameraState(camera2, true);
         activeCamera = camera2;
-
-        // 2번 카메라에서 UI 활성화
         UpdateCanvasRaycast();
 
         isSwitching = false;
@@ -64,8 +81,6 @@ public class CameraSwitcher : MonoBehaviour
         SetCameraState(camera2, false);
         SetCameraState(camera1, true);
         activeCamera = camera1;
-
-        // 1번 카메라에서 UI 비활성화
         UpdateCanvasRaycast();
     }
 
@@ -80,14 +95,13 @@ public class CameraSwitcher : MonoBehaviour
         }
     }
 
-    // Canvas 클릭 가능/불가능 제어
     private void UpdateCanvasRaycast()
     {
         if (targetCanvas != null)
         {
             GraphicRaycaster gr = targetCanvas.GetComponent<GraphicRaycaster>();
             if (gr != null)
-                gr.enabled = (activeCamera == camera2); // 2번 카메라만 클릭 가능
+                gr.enabled = (activeCamera == camera2);
         }
     }
 }
