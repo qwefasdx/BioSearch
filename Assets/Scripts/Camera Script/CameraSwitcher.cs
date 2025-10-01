@@ -1,7 +1,13 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine;
 using System.Collections;
+public enum ViewMode
+{
+    Front,  // 정면 (W 전환 허용)
+    Left,   // A
+    Right   // D
+}
 
 public class CameraSwitcher : MonoBehaviour
 {
@@ -18,6 +24,9 @@ public class CameraSwitcher : MonoBehaviour
     private bool wPressed = false;
     public float switchDelay = 1.5f; // W 누른 후 대기 시간
 
+    //  현재 camera1의 시점 상태
+    public ViewMode currentView = ViewMode.Front;
+
     void Start()
     {
         SetCameraState(camera1, true);
@@ -33,8 +42,8 @@ public class CameraSwitcher : MonoBehaviour
         if (targetInputField != null && targetInputField.isFocused)
             return;
 
-        // W 키 → camera1 → camera2 전환
-        if (activeCamera == camera1)
+        // W 키 → camera1 → camera2 전환 (단, Front 시점일 때만 허용)
+        if (activeCamera == camera1 && currentView == ViewMode.Front)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -60,13 +69,26 @@ public class CameraSwitcher : MonoBehaviour
         {
             SwitchFrom2To1();
         }
+
+        //  A, D 입력으로 camera1의 시점 변경
+        if (activeCamera == camera1)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+                currentView = ViewMode.Left;
+
+            if (Input.GetKeyDown(KeyCode.D))
+                currentView = ViewMode.Right;
+
+            if (Input.GetKeyDown(KeyCode.S)) // ← S 누르면 정면 복귀
+                currentView = ViewMode.Front;
+        }
     }
 
     IEnumerator SwitchFrom1To2()
     {
         isSwitching = true;
 
-        yield return null; // 지연 없이 바로 전환 가능
+        yield return null;
 
         SetCameraState(camera1, false);
         SetCameraState(camera2, true);
@@ -81,6 +103,8 @@ public class CameraSwitcher : MonoBehaviour
         SetCameraState(camera2, false);
         SetCameraState(camera1, true);
         activeCamera = camera1;
+
+        currentView = ViewMode.Front; // 복귀 시 자동으로 Front
         UpdateCanvasRaycast();
     }
 
