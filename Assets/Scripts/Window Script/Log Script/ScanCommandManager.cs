@@ -1,15 +1,20 @@
+using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// scan 명령어를 처리하는 클래스
-/// - 특정 폴더 탐색
-/// - 이상 폴더 개수 확인
-/// </summary>
 public class ScanCommandManager : MonoBehaviour
 {
-    [Header("References")]
-    public FileWindow fileWindow;          // 스캔할 폴더 구조
-    public LogWindowManager logWindow;     // 로그 출력 창
+    public static ScanCommandManager Instance;
+
+    public FileWindow fileWindow;
+    public LogWindowManager logWindow;
+
+    private bool isScanning = false;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     private void OnEnable()
     {
@@ -23,45 +28,64 @@ public class ScanCommandManager : MonoBehaviour
             logWindow.OnScanCommandEntered -= HandleScanCommand;
     }
 
-    /// <summary>
-    /// scan 명령어 입력 시 호출되는 처리 함수
-    /// </summary>
-    private void HandleScanCommand(string fileName)
+    private void HandleScanCommand(string folderName)
     {
-        ScanFile(fileName);
-    }
-
-    /// <summary>
-    /// 특정 폴더를 검색 후 이상 여부 검사
-    /// </summary>
-    private void ScanFile(string fileName)
-    {
-        if (fileWindow == null)
+        if (isScanning)
         {
-            logWindow.Log("FileWindow 참조가 없습니다.");
+            logWindow.Log("스캔 중입니다...");
             return;
         }
 
         Folder root = fileWindow.GetRootFolder();
-        Folder target = FindFolderByName(root, fileName);
+        Folder target = FindFolderByName(root, folderName);
 
         if (target == null)
         {
-            logWindow.Log($"폴더 '{fileName}'을(를) 찾을 수 없습니다.");
+            logWindow.Log($"폴더 '{folderName}'을(를) 찾을 수 없습니다.");
             return;
         }
 
-        int abnormalCount = CountAbnormalFoldersRecursive(target);
-
-        if (abnormalCount > 0)
-            logWindow.Log($"{abnormalCount}개의 이상 감지됨.");
-        else
-            logWindow.Log("이상 없음.");
+        StartCoroutine(ScanFolderCoroutine(target));
     }
 
-    /// <summary>
-    /// 폴더 이름으로 재귀 검색
-    /// </summary>
+    private IEnumerator ScanFolderCoroutine(Folder folder)
+    {
+        isScanning = true;
+        logWindow.DisableInput();
+
+        int totalItems = CountAllFilesAndFolders(folder);
+        int totalFiles = CountAllFilesOnly(folder); // 하위 파일만 계산
+        int progressBarLength = 10;
+
+        float itemsPerBar = totalItems / (float)progressBarLength;
+        float timePerBar = itemsPerBar * totalFiles * 2f; // 2초 * 하위 파일 개수
+
+        logWindow.Log($"이상 스캔중 {new string('ㅁ', progressBarLength)}");
+
+        for (int i = 1; i <= progressBarLength; i++)
+        {
+            yield return new WaitForSeconds(timePerBar);
+            string progress = new string('■', i) + new string('ㅁ', progressBarLength - i);
+            logWindow.ReplaceLastLog($"이상 스캔중 {progress}");
+        }
+
+        int abnormalCount = CountAbnormal(folder);
+        logWindow.ReplaceLastLog($"스캔 완료: 이상 {abnormalCount}개 발견됨.");
+
+        logWindow.EnableInput();
+        isScanning = false;
+    }
+
+    private int CountAllFilesOnly(Folder folder)
+    {
+        int count = folder.files.Count;
+        foreach (var child in folder.children)
+            count += CountAllFilesOnly(child);
+        return count;
+    }
+
+
+
     private Folder FindFolderByName(Folder folder, string name)
     {
         if (folder.name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
@@ -75,17 +99,25 @@ public class ScanCommandManager : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// 이상 폴더 개수를 재귀적으로 계산
-    /// </summary>
-    private int CountAbnormalFoldersRecursive(Folder folder)
+    private int CountAllFilesAndFolders(Folder folder)
+    {
+        int count = 1 + folder.files.Count;
+        foreach (var child in folder.children)
+            count += CountAllFilesAndFolders(child);
+        return count;
+    }
+
+    private int CountAbnormal(Folder folder)
     {
         int count = folder.isAbnormal ? 1 : 0;
         foreach (var child in folder.children)
-            count += CountAbnormalFoldersRecursive(child);
+            count += CountAbnormal(child);
+        foreach (var file in folder.files)
+            if (file.isAbnormal) count++;
         return count;
     }
 }
+
 
 /// <summary>
 /// FileWindow 클래스의 루트 폴더 접근 확장 메서드

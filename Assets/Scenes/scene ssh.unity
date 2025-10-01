@@ -6179,11 +6179,13 @@ MonoBehaviour:
     extension: txt
     textContent: asdf
     imageContent: {fileID: 649674069, guid: d380b87045aebe64287ec973dbc5ab06, type: 3}
-    parentFolderName: Body
+    isAbnormal: 1
+    parentFolderName: body
   - fileName: 22
     extension: txt
     textContent: asdf
     imageContent: {fileID: 649674069, guid: d380b87045aebe64287ec973dbc5ab06, type: 3}
+    isAbnormal: 0
     parentFolderName: Body
 --- !u!1 &1841328794
 GameObject:

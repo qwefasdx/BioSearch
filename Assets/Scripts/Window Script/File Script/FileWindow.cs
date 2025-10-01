@@ -58,7 +58,8 @@ public class FileWindow : MonoBehaviour
                 data.extension,
                 targetParent,
                 data.textContent,
-                data.imageContent
+                data.imageContent,
+                data.isAbnormal
             );
 
             currentFolderFiles.Add(file);
@@ -169,20 +170,38 @@ public class FileWindow : MonoBehaviour
 
     public void SetSelectedIcon(FolderIcon icon)
     {
+        // 기존 선택된 폴더 해제
         if (selectedFolderIcon != null)
             selectedFolderIcon.SetSelected(false);
 
+        // 파일 선택도 해제 (통합 관리)
+        if (selectedFileIcon != null)
+        {
+            selectedFileIcon.SetSelected(false);
+            selectedFileIcon = null;
+        }
+
         selectedFolderIcon = icon;
-        selectedFolderIcon.SetSelected(true);
+        if (selectedFolderIcon != null)
+            selectedFolderIcon.SetSelected(true);
     }
 
     public void SetSelectedFileIcon(FileIcon icon)
     {
+        // 기존 선택된 파일 해제
         if (selectedFileIcon != null)
             selectedFileIcon.SetSelected(false);
 
+        // 폴더 선택도 해제 (통합 관리)
+        if (selectedFolderIcon != null)
+        {
+            selectedFolderIcon.SetSelected(false);
+            selectedFolderIcon = null;
+        }
+
         selectedFileIcon = icon;
-        selectedFileIcon.SetSelected(true);
+        if (selectedFileIcon != null)
+            selectedFileIcon.SetSelected(true);
     }
 
     public List<Folder> GetCurrentPathList()

@@ -8,6 +8,7 @@ using TMPro;
 /// - 확장자별 아이콘 이미지를 ExtensionManager에서 가져옴
 /// - 더블클릭 시 PopupManager 통해 파일 열림
 /// - 드래그 앤 드롭 지원
+/// - isAbnormal 여부에 따라 텍스트 색상 변경
 /// </summary>
 public class FileIcon : MonoBehaviour, IPointerClickHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -19,7 +20,9 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler,
     private FileWindow fileWindow;
     private File file;
 
-    private Color normalColor = Color.white;
+    // 기본 색상
+    private Color normalColor = Color.black;   // 정상 파일: 검정
+    private Color abnormalColor = Color.red;   // 이상 파일: 빨강
     private Color selectedColor = Color.yellow;
 
     /// <summary>
@@ -36,6 +39,10 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler,
         if (iconImage != null && ExtensionManager.Instance != null)
             iconImage.sprite = ExtensionManager.Instance.GetIconForExtension(file.extension);
 
+        //  파일 이상 여부 반영
+        if (fileNameText != null)
+            fileNameText.color = file.isAbnormal ? abnormalColor : normalColor;
+
         SetSelected(false);
     }
 
@@ -44,7 +51,16 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler,
     public void SetSelected(bool selected)
     {
         if (fileNameText == null) return;
-        fileNameText.color = selected ? selectedColor : normalColor;
+
+        if (selected)
+        {
+            fileNameText.color = selectedColor;
+        }
+        else
+        {
+            //  선택 해제 시 다시 이상 여부 반영
+            fileNameText.color = file.isAbnormal ? abnormalColor : normalColor;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
