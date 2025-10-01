@@ -1912,8 +1912,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdd7dae89a8b4f843b64a77159edd872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupPrefab: {fileID: 7727029378613877681, guid: 3f0347fb32d8e3648bc342e0d4f5f005, type: 3}
-  canvas: {fileID: 1152194525}
+  popupPrefab: {fileID: 0}
+  canvas: {fileID: 0}
 --- !u!114 &693352156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3455,7 +3455,7 @@ MonoBehaviour:
   camera2: {fileID: 1110581901}
   targetCanvas: {fileID: 1152194525}
   targetInputField: {fileID: 1666166031}
-  switchDelay: 1.5
+  switchDelay: 1
 --- !u!4 &1135300293
 Transform:
   m_ObjectHideFlags: 0
@@ -6174,17 +6174,7 @@ MonoBehaviour:
   emptyText: {fileID: 861951011}
   pathPanelManager: {fileID: 1841328800}
   backButton: {fileID: 6551093433372594366}
-  fileDatas:
-  - fileName: 11
-    extension: txt
-    textContent: asdf
-    imageContent: {fileID: 649674069, guid: d380b87045aebe64287ec973dbc5ab06, type: 3}
-    parentFolderName: Body
-  - fileName: 22
-    extension: txt
-    textContent: asdf
-    imageContent: {fileID: 649674069, guid: d380b87045aebe64287ec973dbc5ab06, type: 3}
-    parentFolderName: Body
+  fileDatas: []
 --- !u!1 &1841328794
 GameObject:
   m_ObjectHideFlags: 0
