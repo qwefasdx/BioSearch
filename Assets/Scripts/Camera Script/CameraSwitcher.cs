@@ -14,9 +14,14 @@ public class CameraSwitcher : MonoBehaviour
     private Camera activeCamera;
     private bool isSwitching = false;
 
-    private float wPressedTime = 0f;
-    private bool wPressed = false;
-    public float switchDelay = 1.5f; // W 누른 후 대기 시간
+    //  View 상태
+    private enum ViewMode { Front, Left, Right }
+    private ViewMode currentView = ViewMode.Front;
+
+    //  W 타이머 관련
+    private float wTimer = 0f;
+    private bool wTimerActive = false;
+    public float switchDelay = 1.5f; // 전환 대기 시간
 
     void Start()
     {
@@ -24,41 +29,70 @@ public class CameraSwitcher : MonoBehaviour
         SetCameraState(camera2, false);
         activeCamera = camera1;
         UpdateCanvasRaycast();
+        currentView = ViewMode.Front; // 기본 시작 상태
     }
 
     void Update()
     {
         if (isSwitching) return;
+        if (targetInputField != null && targetInputField.isFocused) return;
 
-        if (targetInputField != null && targetInputField.isFocused)
-            return;
-
-        // W 키 → camera1 → camera2 전환
-        if (activeCamera == camera1)
+        //  camera1 + Front 상태일 때만 W 전환 가능
+        if (activeCamera == camera1 && currentView == ViewMode.Front)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                wPressed = true;
-                wPressedTime = Time.time;
+                wTimer = switchDelay;
+                wTimerActive = true;
             }
 
-            if (wPressed && Time.time - wPressedTime >= switchDelay)
+            if (wTimerActive)
             {
-                StartCoroutine(SwitchFrom1To2());
-                wPressed = false;
-            }
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    wTimerActive = false; // 타이머 취소
+                    return;
+                }
 
-            // 다른 키 입력 시 초기화
-            if (wPressed && (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.W)))
-            {
-                wPressed = false;
+                if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.W) && !Input.GetKeyDown(KeyCode.S))
+                {
+                    return; // 다른 키 누르면 일시정지
+                }
+
+                wTimer -= Time.deltaTime;
+
+                if (wTimer <= 0f)
+                {
+                    StartCoroutine(SwitchFrom1To2());
+                    wTimerActive = false;
+                }
             }
         }
 
-        // S 키 → camera2 → camera1 전환
+        //  camera2 상태에서 S로 복귀
         if (activeCamera == camera2 && Input.GetKeyDown(KeyCode.S))
         {
             SwitchFrom2To1();
+        }
+
+        //  A, D로 시점 전환 (camera1 상태에서만)
+        if (activeCamera == camera1)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                currentView = ViewMode.Left;
+                // 카메라 이동/회전 로직 추가
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                currentView = ViewMode.Right;
+                // 카메라 이동/회전 로직 추가
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                currentView = ViewMode.Front; // 정면 복귀
+                // 카메라 이동/회전 복귀 로직 추가
+            }
         }
     }
 
@@ -66,7 +100,7 @@ public class CameraSwitcher : MonoBehaviour
     {
         isSwitching = true;
 
-        yield return null; // 지연 없이 바로 전환 가능
+        yield return null;
 
         SetCameraState(camera1, false);
         SetCameraState(camera2, true);
@@ -78,9 +112,11 @@ public class CameraSwitcher : MonoBehaviour
 
     void SwitchFrom2To1()
     {
+        wTimerActive = false; // W 타이머 취소
         SetCameraState(camera2, false);
         SetCameraState(camera1, true);
         activeCamera = camera1;
+        currentView = ViewMode.Front; // 복귀 시 정면
         UpdateCanvasRaycast();
     }
 
