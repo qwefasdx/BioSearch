@@ -13,8 +13,13 @@ public class PopupManager : MonoBehaviour
 
     private void Awake()
     {
+        // 싱글톤 설정
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        // Canvas 자동 탐색 (혹시 Inspector에 지정 안 했을 경우 대비)
+        if (canvas == null)
+            canvas = FindObjectOfType<Canvas>();
     }
 
     public void OpenFile(File file)
@@ -25,7 +30,21 @@ public class PopupManager : MonoBehaviour
             return;
         }
 
+        if (popupPrefab == null)
+        {
+            Debug.LogError("PopupManager: popupPrefab이 지정되지 않았습니다!");
+            return;
+        }
+
+        // 팝업 생성
         GameObject popupInstance = Instantiate(popupPrefab, canvas.transform, false);
+        if (popupInstance == null)
+        {
+            Debug.LogError("PopupManager: Popup 생성 실패!");
+            return;
+        }
+
+        // Popup 스크립트 가져오기
         Popup popupScript = popupInstance.GetComponent<Popup>();
         if (popupScript != null)
         {
@@ -36,12 +55,14 @@ public class PopupManager : MonoBehaviour
             if (trigger == null)
                 trigger = popupScript.topBar.gameObject.AddComponent<EventTrigger>();
 
+            trigger.triggers.Clear(); // 기존 트리거 초기화 (중복 방지)
+
             // PointerDown
             EventTrigger.Entry entryDown = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerDown
             };
-            entryDown.callback.AddListener((data) => popupScript.OnTopBarPointerDown(data));
+            entryDown.callback.AddListener((data) => popupScript.OnTopBarPointerDown((PointerEventData)data));
             trigger.triggers.Add(entryDown);
 
             // Drag
@@ -49,8 +70,12 @@ public class PopupManager : MonoBehaviour
             {
                 eventID = EventTriggerType.Drag
             };
-            entryDrag.callback.AddListener((data) => popupScript.OnTopBarDrag(data));
+            entryDrag.callback.AddListener((data) => popupScript.OnTopBarDrag((PointerEventData)data));
             trigger.triggers.Add(entryDrag);
+        }
+        else
+        {
+            Debug.LogError("PopupManager: Popup 프리팹에 Popup 스크립트가 없습니다!");
         }
 
         // 생성 후 최상단으로
@@ -66,27 +91,35 @@ public class PopupManager : MonoBehaviour
             return;
         }
 
-        switch (file.extension.ToLower())
+        // 확장자별 표시 로직
+        string ext = file.extension.ToLower();
+        popupImage.gameObject.SetActive(false);
+        popupText.gameObject.SetActive(false);
+
+        switch (ext)
         {
             case "png":
+            case "jpg":
+            case "jpeg":
                 popupImage.gameObject.SetActive(true);
-                popupText.gameObject.SetActive(false);
                 Image img = popupImage.GetComponent<Image>();
                 if (img != null && file.imageContent != null)
                     img.sprite = file.imageContent;
+                else
+                    Debug.LogWarning($"{file.name}.{file.extension} : 이미지 내용 없음");
                 break;
 
             case "txt":
-                popupImage.gameObject.SetActive(false);
                 popupText.gameObject.SetActive(true);
                 TMP_Text textComp = popupText.GetComponent<TMP_Text>();
                 if (textComp != null)
                     textComp.text = file.textContent ?? $"{file.name}.{file.extension} (내용 없음)";
+                else
+                    Debug.LogWarning($"{file.name}.{file.extension} : TMP_Text 컴포넌트 없음");
                 break;
 
             default:
-                popupImage.gameObject.SetActive(false);
-                popupText.gameObject.SetActive(false);
+                Debug.LogWarning($"{file.name}.{file.extension} : 지원되지 않는 파일 형식");
                 break;
         }
     }

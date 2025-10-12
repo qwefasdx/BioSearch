@@ -4460,6 +4460,7 @@ MonoBehaviour:
   globalPanels:
   - {fileID: 1796863568}
   - {fileID: 942185078}
+  - {fileID: 2021134371}
   globalColor: {r: 0, g: 0, b: 0, a: 1}
   logPanels:
   - {fileID: 1382939415}
