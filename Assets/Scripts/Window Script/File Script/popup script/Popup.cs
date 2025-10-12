@@ -3,6 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// 개별 팝업 동작을 제어하는 클래스
+/// - 드래그 이동
+/// - 닫기 버튼 처리
+/// - 파괴 시 PopupManager와 동기화
+/// </summary>
 public class Popup : MonoBehaviour
 {
     [Header("UI References")]
@@ -13,6 +19,9 @@ public class Popup : MonoBehaviour
     private RectTransform popupRect;
     private Canvas parentCanvas;
     private Vector2 offset;
+
+    // PopupManager에서 관리할 키 (파일 이름)
+    private string fileKey;
 
     /// <summary>
     /// 팝업 생성 시 파일 정보를 세팅
@@ -29,6 +38,21 @@ public class Popup : MonoBehaviour
         // X 버튼 클릭 이벤트
         if (closeButton != null)
             closeButton.onClick.AddListener(() => Destroy(gameObject));
+    }
+
+    /// <summary>
+    /// PopupManager에서 관리용 키 설정
+    /// </summary>
+    public void SetFileKey(string key)
+    {
+        fileKey = key;
+    }
+
+    private void OnDestroy()
+    {
+        // 파괴 시 PopupManager에 알림
+        if (PopupManager.Instance != null && !string.IsNullOrEmpty(fileKey))
+            PopupManager.Instance.OnPopupDestroyed(fileKey);
     }
 
     #region 드래그 구현
