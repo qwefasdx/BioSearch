@@ -6306,6 +6306,7 @@ MonoBehaviour:
   leftFootButton: {fileID: 981891142}
   rightLegButton: {fileID: 455835654}
   rightFootButton: {fileID: 1329427624}
+  upButtonPrefab: {fileID: 7856131077749057725, guid: 7e50e978dcde1574c82c9676f3c521a0, type: 3}
 --- !u!1 &1841328794
 GameObject:
   m_ObjectHideFlags: 0
