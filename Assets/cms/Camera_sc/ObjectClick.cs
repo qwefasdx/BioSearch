@@ -19,7 +19,7 @@ public class ObjectClick : MonoBehaviour
                 if (blink != null)
                 {
                     blink.StartBlink();
-                    uiManager.DecreaseCounter();
+                    //uiManager.DecreaseCounter();
                 }
             }
         }
