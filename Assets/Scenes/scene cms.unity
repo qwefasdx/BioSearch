@@ -2105,7 +2105,7 @@ GameObject:
   - component: {fileID: 708220949}
   - component: {fileID: 708220953}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: door
   m_TagString: EscapeCancelObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6397,7 +6397,7 @@ GameObject:
   - component: {fileID: 1754632841}
   - component: {fileID: 1754632840}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6418,7 +6418,7 @@ MonoBehaviour:
   pointA: {fileID: 291100903}
   pointB: {fileID: 542010896}
   pointC: {fileID: 691845768}
-  speed: 2
+  speed: 4
 --- !u!136 &1754632841
 CapsuleCollider:
   m_ObjectHideFlags: 0

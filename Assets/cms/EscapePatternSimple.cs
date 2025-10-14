@@ -29,6 +29,8 @@ public class EscapePatternSimple : MonoBehaviour
         yield return MoveTo(pointB);
         yield return MoveTo(pointC);
         isMoving = false;
+        Debug.Log("[EscapePatternSimple] 적 문앞에 도착 ");
+
     }
 
     private IEnumerator MoveBackSequence()
@@ -37,6 +39,7 @@ public class EscapePatternSimple : MonoBehaviour
         yield return MoveTo(pointB);
         yield return MoveTo(pointA);
         isMoving = false;
+        Debug.Log("[EscapePatternSimple] 적 원 위치로 돌아감 ");
     }
 
     private IEnumerator MoveTo(Transform target)
