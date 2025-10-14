@@ -617,45 +617,45 @@ MonoBehaviour:
   bodyParts:
   - partName: Head
     button: {fileID: 1265956438}
-    normalSprite: {fileID: -112907207, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: 1095033861, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: Body
     button: {fileID: 1515243329}
-    normalSprite: {fileID: -819747698, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: 2052538358, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: LeftArm
     button: {fileID: 490495806}
-    normalSprite: {fileID: 1716087899, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: 1494969288, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: RightArm
     button: {fileID: 2084964257}
-    normalSprite: {fileID: -1461304648, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: 166725174, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
-  - partName: LeftLeg
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
+  - partName: LefrLeg
     button: {fileID: 1388867520}
-    normalSprite: {fileID: -1092139047, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: -600746582, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: RightLeg
     button: {fileID: 455835654}
-    normalSprite: {fileID: 2095219562, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-    abnormalSprite: {fileID: -2103249532, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: LeftHand
     button: {fileID: 1167035857}
-    normalSprite: {fileID: 415557190, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
-    abnormalSprite: {fileID: -1853977718, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: RightHand
     button: {fileID: 723116580}
-    normalSprite: {fileID: 1044918656, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
-    abnormalSprite: {fileID: -466698587, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: LeftFoot
     button: {fileID: 981891142}
-    normalSprite: {fileID: 2087137691, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
-    abnormalSprite: {fileID: -1250428622, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
   - partName: RightFoot
     button: {fileID: 1329427624}
-    normalSprite: {fileID: -833976916, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
-    abnormalSprite: {fileID: 433656760, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
-  fileWindow: {fileID: 1796863570}
+    normalSprite: {fileID: 0}
+    abnormalSprite: {fileID: 0}
+  fileWindow: {fileID: 0}
 --- !u!1 &171645015
 GameObject:
   m_ObjectHideFlags: 0
@@ -2638,6 +2638,7 @@ GameObject:
   - component: {fileID: 883150064}
   - component: {fileID: 883150063}
   - component: {fileID: 883150062}
+  - component: {fileID: 883150067}
   m_Layer: 0
   m_Name: 'on-off Button '
   m_TagString: Untagged
@@ -2749,6 +2750,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &883150067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883150061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84fd6e6f5bf71d747a35515fe5180542, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blinkColor: {r: 0, g: 0, b: 0, a: 1}
+  blinkDuration: 0.1
+  blinkCount: 1
 --- !u!1 &891827898
 GameObject:
   m_ObjectHideFlags: 0
@@ -6642,7 +6658,7 @@ MonoBehaviour:
   leftFootButton: {fileID: 981891142}
   rightLegButton: {fileID: 455835654}
   rightFootButton: {fileID: 1329427624}
-  upButtonPrefab: {fileID: 7856131077749057725, guid: 7e50e978dcde1574c82c9676f3c521a0, type: 3}
+  upButtonPrefab: {fileID: 0}
 --- !u!1 &1841328794
 GameObject:
   m_ObjectHideFlags: 0
