@@ -1,13 +1,15 @@
 using UnityEngine;
-using TMPro;  // TextMeshPro 사용 시 필요
+using TMPro;
 
 public class TimeManager : MonoBehaviour
 {
     public float gameDuration = 60f; // 제한 시간
     private float remainingTime;
 
-    public TextMeshProUGUI timerText; //  UI 연결용
+    public TextMeshProUGUI timerText; // UI 연결용
     public bool IsTimeOver => remainingTime <= 0f;
+
+    private bool isGameOverTriggered = false; // 중복 호출 방지
 
     void Start()
     {
@@ -17,9 +19,17 @@ public class TimeManager : MonoBehaviour
 
     void Update()
     {
+        if (isGameOverTriggered) return; // 이미 끝났으면 중단
+
         remainingTime -= Time.deltaTime;
         remainingTime = Mathf.Max(0f, remainingTime);
         UpdateTimerUI();
+
+        if (remainingTime <= 0f)
+        {
+            isGameOverTriggered = true;
+            OnTimeOver(); //  시간 다 됐을 때 호출
+        }
     }
 
     void UpdateTimerUI()
@@ -32,6 +42,13 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+    void OnTimeOver()
+    {
+        Debug.Log("[TimeManager] 제한 시간 종료! 게임 오버 조건 발동 가능");
+        // TODO: 나중에 GameOverManager로 연결 예정
+        // ex) FindObjectOfType<GameOverManager>()?.TriggerGameOver();
+    }
+
     public float GetRemainingTime()
     {
         return remainingTime;
@@ -40,6 +57,7 @@ public class TimeManager : MonoBehaviour
     public void ResetTimer()
     {
         remainingTime = gameDuration;
+        isGameOverTriggered = false;
         UpdateTimerUI();
     }
 }
