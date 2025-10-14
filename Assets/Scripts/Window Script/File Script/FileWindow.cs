@@ -172,5 +172,10 @@ public partial class FileWindow : MonoBehaviour
             AssignAbnormalParameters(child);
         }
     }
+    public Folder GetRootFolder()
+    {
+        return rootFolder;
+    }
+
 }
 

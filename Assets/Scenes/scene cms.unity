@@ -617,34 +617,45 @@ MonoBehaviour:
   bodyParts:
   - partName: Head
     button: {fileID: 1265956438}
-    sprite: {fileID: -112907207, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    normalSprite: {fileID: -112907207, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: 1095033861, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: Body
     button: {fileID: 1515243329}
-    sprite: {fileID: -819747698, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    normalSprite: {fileID: -819747698, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: 2052538358, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: LeftArm
     button: {fileID: 490495806}
-    sprite: {fileID: 1716087899, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    normalSprite: {fileID: 1716087899, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: 1494969288, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: RightArm
     button: {fileID: 2084964257}
-    sprite: {fileID: -1461304648, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
-  - partName: LefrLeg
+    normalSprite: {fileID: -1461304648, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: 166725174, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+  - partName: LeftLeg
     button: {fileID: 1388867520}
-    sprite: {fileID: -1092139047, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    normalSprite: {fileID: -1092139047, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: -600746582, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: RightLeg
     button: {fileID: 455835654}
-    sprite: {fileID: 2095219562, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    normalSprite: {fileID: 2095219562, guid: 7c91a8e2db504bf41abb0714a540366b, type: 3}
+    abnormalSprite: {fileID: -2103249532, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: LeftHand
     button: {fileID: 1167035857}
-    sprite: {fileID: 415557190, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
+    normalSprite: {fileID: 415557190, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
+    abnormalSprite: {fileID: -1853977718, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: RightHand
     button: {fileID: 723116580}
-    sprite: {fileID: 1044918656, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
+    normalSprite: {fileID: 1044918656, guid: e84c8ff923e4e3441af3f1cf29900576, type: 3}
+    abnormalSprite: {fileID: -466698587, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: LeftFoot
     button: {fileID: 981891142}
-    sprite: {fileID: 2087137691, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
+    normalSprite: {fileID: 2087137691, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
+    abnormalSprite: {fileID: -1250428622, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
   - partName: RightFoot
     button: {fileID: 1329427624}
-    sprite: {fileID: -833976916, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
+    normalSprite: {fileID: -833976916, guid: d33a71d92c0f37a489ba632579aaebdb, type: 3}
+    abnormalSprite: {fileID: 433656760, guid: 238e99e9ce52bd64e869d0c4588099f4, type: 3}
+  fileWindow: {fileID: 1796863570}
 --- !u!1 &171645015
 GameObject:
   m_ObjectHideFlags: 0
@@ -6631,6 +6642,7 @@ MonoBehaviour:
   leftFootButton: {fileID: 981891142}
   rightLegButton: {fileID: 455835654}
   rightFootButton: {fileID: 1329427624}
+  upButtonPrefab: {fileID: 7856131077749057725, guid: 7e50e978dcde1574c82c9676f3c521a0, type: 3}
 --- !u!1 &1841328794
 GameObject:
   m_ObjectHideFlags: 0
