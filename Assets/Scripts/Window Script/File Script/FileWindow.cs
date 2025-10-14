@@ -38,6 +38,10 @@ public partial class FileWindow : MonoBehaviour
     public Button rightLegButton;
     public Button rightFootButton;
 
+    [Header("Special Prefabs")]
+    public GameObject upButtonPrefab;  // 상위 폴더로 이동하는 "..." 아이콘 프리팹
+
+
     // 현재 선택된 아이콘
     private FolderIcon selectedFolderIcon;
     private FileIcon selectedFileIcon;

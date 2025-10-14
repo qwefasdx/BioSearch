@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
+
 
 /// <summary>
 /// FileWindow의 UI 동작 관련 메서드 모음.
@@ -27,6 +29,23 @@ public partial class FileWindow
         // 콘텐츠 유무 확인
         bool hasContent = (folder.children.Count > 0) || HasFilesInFolder(folder);
         emptyText.gameObject.SetActive(!hasContent);
+
+        // ---------------------------------------------
+        // "..." 상위 폴더 이동 버튼 생성 (루트 폴더에서는 생성 안 함)
+        // ---------------------------------------------
+        if (upButtonPrefab != null && folder.parent != null)
+        {
+            GameObject upObj = Instantiate(upButtonPrefab, contentArea);
+            Button upButton = upObj.GetComponent<Button>();
+            if (upButton != null)
+            {
+                upButton.onClick.AddListener(() =>
+                {
+                    // 클릭 시 부모 폴더로 이동
+                    OpenFolder(folder.parent, true);
+                });
+            }
+        }
 
         // 폴더 아이콘 생성
         foreach (Folder child in folder.children)
@@ -95,4 +114,3 @@ public partial class FileWindow
         selectedFileIcon?.SetSelected(true);
     }
 }
-
