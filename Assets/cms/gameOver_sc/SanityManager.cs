@@ -3,14 +3,14 @@ using TMPro;
 
 public class SanityManager : MonoBehaviour
 {
-    [Header("정신력 설정")]
+    [Header("Sanity Settings")]
     public float maxSanity = 100f;
     private float currentSanity;
 
-    [Header("UI 표시 (임시 TMP)")]
+    [Header("UI (TMP Text)")]
     public TextMeshProUGUI sanityText;
 
-    [Header("감소 설정")]
+    [Header("Decrease Settings")]
     public float decreaseAmount = 5f;
 
     private bool isGameOverTriggered = false;
@@ -26,6 +26,7 @@ public class SanityManager : MonoBehaviour
         if (isGameOverTriggered)
             return;
 
+        // For test: decrease sanity when pressing the left arrow key
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             DecreaseSanity(decreaseAmount);
@@ -53,8 +54,11 @@ public class SanityManager : MonoBehaviour
 
     void OnSanityDepleted()
     {
-        //  GameOverManager에게 알림을 보냄
-        FindObjectOfType<GameOverManager>()?.TriggerGameOver("정신력 0으로 인한 게임 오버");
+        GameOverManager gameOver = FindObjectOfType<GameOverManager>();
+        if (gameOver != null)
+        {
+            gameOver.TriggerGameOver("Sanity reached zero");
+        }
     }
 
     public void ResetSanity()

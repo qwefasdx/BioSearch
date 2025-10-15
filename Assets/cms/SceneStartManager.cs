@@ -5,10 +5,25 @@ public class SceneStartManager : MonoBehaviour
     void Start()
     {
         TimerManager timer = FindObjectOfType<TimerManager>();
+        SanityManager sanity = FindObjectOfType<SanityManager>();
+        GameOverManager gameOver = FindObjectOfType<GameOverManager>();
+
         if (timer != null)
         {
+            timer.ResetTimer();
             timer.StartTimer();
         }
-        Debug.Log("[SceneStartManager] 플레이씬 시작, 타이머 시작!");
+
+        if (sanity != null)
+        {
+            sanity.ResetSanity();
+        }
+
+        if (gameOver != null)
+        {
+            gameOver.ResetGameOver();
+        }
+
+        Debug.Log("[SceneStartManager] Timer & Sanity reset, GameOver state cleared!");
     }
 }

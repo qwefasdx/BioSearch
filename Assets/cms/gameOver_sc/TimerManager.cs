@@ -15,14 +15,11 @@ public class TimerManager : MonoBehaviour
         currentTime = totalTime;
         UpdateTimerText();
         gameOverManager = FindObjectOfType<GameOverManager>();
-
-        //  자동 시작 제거
-        
     }
 
     void Update()
     {
-        if (!isRunning) return;
+        if (!isRunning || gameOverManager == null || gameOverManager.IsGameOver()) return;
 
         currentTime -= Time.deltaTime;
         UpdateTimerText();
@@ -31,11 +28,7 @@ public class TimerManager : MonoBehaviour
         {
             currentTime = 0f;
             isRunning = false;
-
-            if (gameOverManager != null)
-                gameOverManager.TriggerGameOver("시간 초과로 인한 게임 오버");
-
-            
+            gameOverManager.TriggerGameOver("시간 초과로 인한 게임 오버");
         }
     }
 
@@ -48,10 +41,14 @@ public class TimerManager : MonoBehaviour
         }
     }
 
-    public void StopTimer()
+    public void StopTimer() => isRunning = false;
+
+    public void ResetTimer()
     {
+        currentTime = totalTime;
+        UpdateTimerText();
         isRunning = false;
-        Debug.Log("[TimerManager] 타이머 정지!");
+        Debug.Log("[TimerManager] 타이머 초기화 완료!");
     }
 
     private void UpdateTimerText()

@@ -688,7 +688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timerText: {fileID: 1093830573}
-  totalTime: 60
+  totalTime: 10
 --- !u!114 &168379754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,7 +701,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e67bf6c4c6f5c44ebc7ef3d7373e8b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameOverText: {fileID: 0}
+  returnDelay: 5
+  startSceneName: StartScene
 --- !u!4 &168379755
 Transform:
   m_ObjectHideFlags: 0
@@ -3695,7 +3696,7 @@ GameObject:
   - component: {fileID: 1093830574}
   - component: {fileID: 1093830573}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Time
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3740,7 +3741,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: TIme
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 320d46ef3769bb44cb729bfdedc90623, type: 2}
   m_sharedMaterial: {fileID: -5327676744230259093, guid: 320d46ef3769bb44cb729bfdedc90623, type: 2}
@@ -3774,8 +3775,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7363,7 +7364,7 @@ GameObject:
   - component: {fileID: 2121517777}
   - component: {fileID: 2121517776}
   m_Layer: 5
-  m_Name: Sanity
+  m_Name: Mantality
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7408,7 +7409,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Mentality
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 320d46ef3769bb44cb729bfdedc90623, type: 2}
   m_sharedMaterial: {fileID: -5327676744230259093, guid: 320d46ef3769bb44cb729bfdedc90623, type: 2}
@@ -7443,7 +7444,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
