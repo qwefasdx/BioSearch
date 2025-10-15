@@ -7,7 +7,8 @@ public class GameStateManager : MonoBehaviour
     {
         Normal,
         EscapePreparing,
-        Escape
+        Escape,
+        Overwhelmed
     }
 
     public GameState currentState = GameState.Normal;
