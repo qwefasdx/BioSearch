@@ -17,7 +17,7 @@ public class TimerManager : MonoBehaviour
         gameOverManager = FindObjectOfType<GameOverManager>();
 
         //  자동 시작 제거
-        // isRunning = true;  ← 이 줄 삭제
+        
     }
 
     void Update()
