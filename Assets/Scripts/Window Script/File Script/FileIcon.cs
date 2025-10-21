@@ -70,8 +70,8 @@ public class FileIcon : MonoBehaviour, IPointerClickHandler,
         if (eventData.clickCount == 2)
         {
             // 더블클릭 시 PopupManager 통해 파일 열기
-            if (PopupManager.Instance != null && file != null)
-                PopupManager.Instance.OpenFile(file);
+            if (FilePopupManager.Instance != null && file != null)
+                FilePopupManager.Instance.OpenFile(file);
         }
     }
 

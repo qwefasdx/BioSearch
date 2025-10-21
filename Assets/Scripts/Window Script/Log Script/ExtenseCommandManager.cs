@@ -65,8 +65,8 @@ public class ExtenseCommandManager : MonoBehaviour
         target.extension = newExtension;
 
         // 파일 이름과 동일한 팝업이 열려있다면 즉시 닫기
-        if (PopupManager.Instance != null)
-            PopupManager.Instance.ClosePopup(fileName);
+        if (FilePopupManager.Instance != null)
+            FilePopupManager.Instance.ClosePopup(fileName);
 
         logWindow.Log($"'{target.name}' 파일 확장자 변경: {oldExt} → {newExtension}");
 

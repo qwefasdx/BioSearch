@@ -3,9 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-/// <summary>
-/// 신체 부위별 버튼, 정상/이상 스프라이트를 관리.
-/// </summary>
 [System.Serializable]
 public class BodyPart
 {
@@ -15,114 +12,86 @@ public class BodyPart
     public Sprite abnormalSprite; // 이상 상태 스프라이트
 }
 
-/// <summary>
-/// 부위별 버튼 클릭 시 FileWindow의 폴더 정보를 기반으로
-/// 정상/이상 스프라이트를 전환하는 관리 클래스.
-/// </summary>
 public class BodyPartViewer : MonoBehaviour
 {
     [Header("왼쪽 카메라창")]
-    [SerializeField] private Image cameraPanel;  // 스프라이트 표시용 Image
+    public Image cameraPanel;  // 스프라이트를 표시할 Image
 
     [Header("부위 & 버튼 매핑")]
-    [SerializeField] private BodyPart[] bodyParts;  // Inspector 등록용 배열
+    public BodyPart[] bodyParts;  // Inspector에서 부위, 버튼, 스프라이트 쌍 등록
 
     [Header("File Window 연결")]
-    [SerializeField] private FileWindow fileWindow; // 폴더 구조 참조용
-
-    // 빠른 조회를 위한 캐시
-    private Dictionary<string, BodyPart> bodyPartLookup = new Dictionary<string, BodyPart>();
-
-    void Awake()
-    {
-        // 캐시 초기화
-        foreach (var part in bodyParts)
-        {
-            if (string.IsNullOrEmpty(part.partName))
-            {
-                Debug.LogWarning("BodyPart 이름이 비어 있습니다.", this);
-                continue;
-            }
-
-            if (bodyPartLookup.ContainsKey(part.partName))
-            {
-                Debug.LogWarning($"중복된 BodyPart 이름: {part.partName}", this);
-                continue;
-            }
-
-            bodyPartLookup[part.partName] = part;
-        }
-    }
+    public FileWindow fileWindow; // 폴더 이상 여부 정보를 가져오기 위한 참조
 
     void Start()
     {
         // 각 버튼 클릭 이벤트 등록
         foreach (var part in bodyParts)
         {
-            if (part.button == null)
+            string partName = part.partName; // 지역 변수 복사 (람다 캡처 방지)
+            if (part.button != null)
             {
-                Debug.LogWarning($"{part.partName} 버튼이 설정되지 않았습니다.", this);
-                continue;
+                part.button.onClick.AddListener(() => ShowPart(partName));
             }
-
-            string partName = part.partName; // 로컬 복사 (람다 캡처 방지)
-            part.button.onClick.AddListener(() => OnBodyPartClicked(partName));
         }
     }
 
     /// <summary>
-    /// 버튼 클릭 시 해당 부위의 정상/이상 스프라이트 표시
+    /// 버튼 클릭 시 해당 부위의 스프라이트 표시
     /// </summary>
-    private void OnBodyPartClicked(string partName)
+    public void ShowPart(string partName)
     {
         if (cameraPanel == null)
         {
-            Debug.LogWarning("cameraPanel이 설정되지 않았습니다.", this);
+            Debug.LogWarning("cameraPanel이 설정되지 않았습니다.");
             return;
         }
 
         if (fileWindow == null)
         {
-            Debug.LogWarning("fileWindow가 연결되지 않았습니다.", this);
+            Debug.LogWarning("fileWindow가 연결되지 않았습니다.");
             return;
         }
 
-        Folder root = fileWindow.GetRootFolder();
-        if (root == null)
-        {
-            Debug.LogWarning("FileWindow에 루트 폴더가 없습니다.", this);
-            return;
-        }
+        // FileWindow 내부의 폴더 구조에서 해당 부위 폴더 찾기
+        Folder targetFolder = FindFolderByName(fileWindow.GetRootFolder(), partName);
 
-        Folder targetFolder = FindFolderByName(root, partName);
         if (targetFolder == null)
         {
-            Debug.LogWarning($"'{partName}' 폴더를 찾을 수 없습니다.", this);
+            Debug.LogWarning("해당 부위 폴더를 찾을 수 없습니다: " + partName);
             return;
         }
 
-        if (!bodyPartLookup.TryGetValue(partName, out BodyPart part))
+        // BodyPartViewer의 bodyParts 목록에서 대응되는 BodyPart 찾기
+        foreach (var part in bodyParts)
         {
-            Debug.LogWarning($"'{partName}'에 대응되는 BodyPart가 없습니다.", this);
-            return;
+            if (part.partName == partName)
+            {
+                // Folder.cs의 버튼 색상 조건과 동일한 기준 적용
+                bool shouldShowAbnormal = targetFolder.isAbnormal || HasAbnormalInChildren(targetFolder);
+
+                if (shouldShowAbnormal && part.abnormalSprite != null)
+                {
+                    cameraPanel.sprite = part.abnormalSprite;
+                }
+                else
+                {
+                    cameraPanel.sprite = part.normalSprite;
+                }
+                return;
+            }
         }
 
-        // 이상 상태에 따라 스프라이트 교체
-        cameraPanel.sprite = targetFolder.isAbnormal && part.abnormalSprite != null
-            ? part.abnormalSprite
-            : part.normalSprite;
+        Debug.LogWarning("Unknown part: " + partName);
     }
 
     /// <summary>
-    /// 폴더 이름으로 Folder를 재귀 탐색
+    /// 폴더 이름으로 Folder 검색 (재귀)
     /// </summary>
     private Folder FindFolderByName(Folder folder, string name)
     {
-        if (folder == null)
-            return null;
-
-        if (folder.name == name)
-            return folder;
+        if (folder == null) return null;
+        if (folder.name == name) return folder;
 
         foreach (var child in folder.children)
         {
@@ -131,5 +100,18 @@ public class BodyPartViewer : MonoBehaviour
                 return found;
         }
         return null;
+    }
+
+    /// <summary>
+    /// Folder.cs의 HasAbnormalInChildren과 동일한 기준으로 자식 이상 폴더 존재 여부 확인
+    /// </summary>
+    private bool HasAbnormalInChildren(Folder folder)
+    {
+        foreach (var child in folder.children)
+        {
+            if (child.isAbnormal || HasAbnormalInChildren(child))
+                return true;
+        }
+        return false;
     }
 }
