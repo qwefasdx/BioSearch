@@ -63,6 +63,14 @@ public class LogWindowManager : MonoBehaviour
         logText.rectTransform.pivot = new Vector2(0, 0);
         logText.rectTransform.anchorMin = new Vector2(0, 0);
         logText.rectTransform.anchorMax = new Vector2(1, 0);
+
+        Log("n번 피검사자 검사실에 배치..");
+        Log(".......complete");
+        Log("해당 피검사자 BioSearch system 연결..");
+        Log(".......complete");
+        Log("BioSearch에서 사용자의 정신 연결..");
+        Log(".......complete");
+
     }
 
     private void LateUpdate()
