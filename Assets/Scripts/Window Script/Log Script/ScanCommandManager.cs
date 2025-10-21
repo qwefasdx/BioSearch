@@ -161,3 +161,22 @@ public static class FileWindowExtensions
         return field.GetValue(window) as Folder;
     }
 }
+
+public static class AbnormalDetector
+{
+    public static int GetAbnormalCount(Folder folder)
+    {
+        if (folder == null) return 0;
+
+        int count = folder.isAbnormal ? 1 : 0;
+
+        foreach (var child in folder.children)
+            count += GetAbnormalCount(child);
+
+        foreach (var file in folder.files)
+            if (file.isAbnormal) count++;
+
+        return count;
+    }
+}
+

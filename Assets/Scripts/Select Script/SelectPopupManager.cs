@@ -1,68 +1,103 @@
 using UnityEngine;
 using UnityEngine.UI;
-
 public class SelectPopupManager : MonoBehaviour
 {
     [Header("버튼 연결")]
-    public Button acceptButton;   // 수용 버튼
-    public Button releaseButton;  // 방출 버튼
+    public Button acceptButton;
+    public Button releaseButton;
 
     [Header("팝업 프리팹")]
-    public GameObject acceptPopupPrefab;   // "수용하시겠습니까?" 팝업 프리팹
-    public GameObject releasePopupPrefab;  // "방출하시겠습니까?" 팝업 프리팹
+    public GameObject acceptPopupPrefab;
+    public GameObject releasePopupPrefab;
 
-    [Header("부모 오브젝트")]
-    public Transform popupParent; // 팝업을 띄울 부모 (예: Canvas)
+    [Header("팝업 부모")]
+    public Transform popupParent;
 
-    private GameObject currentPopup; // 현재 떠있는 팝업 (1개만 존재)
+    private GameObject currentPopup;
+
+    // 샌티티/로그 연동
+    public SanityManager sanityManager;
+    public LogWindowManager logWindow;
+    public FileWindow fileWindow;
 
     private void Start()
     {
         if (acceptButton != null)
-            acceptButton.onClick.AddListener(OnAcceptButtonClicked);
+            acceptButton.onClick.AddListener(() => ShowPopup(acceptPopupPrefab, true));
+
         if (releaseButton != null)
-            releaseButton.onClick.AddListener(OnReleaseButtonClicked);
+            releaseButton.onClick.AddListener(() => ShowPopup(releasePopupPrefab, false));
     }
 
-    // 수용 버튼 클릭 시
-    private void OnAcceptButtonClicked()
+    private void ShowPopup(GameObject popupPrefab, bool isAccept)
     {
-        ShowPopup(acceptPopupPrefab);
-    }
+        if (currentPopup != null) return;
 
-    // 방출 버튼 클릭 시
-    private void OnReleaseButtonClicked()
-    {
-        ShowPopup(releasePopupPrefab);
-    }
+        if (popupPrefab == null || popupParent == null) return;
 
-    // 팝업 띄우기 (중복 방지)
-    private void ShowPopup(GameObject popupPrefab)
-    {
-        if (currentPopup != null)
-            return; // 이미 떠 있으면 무시
+        currentPopup = Instantiate(popupPrefab, popupParent);
 
-        if (popupPrefab != null && popupParent != null)
+        // PopupPanel 안 X 버튼 찾기
+        Button xButton = currentPopup.transform.Find("PopupPanel/XButton")?.GetComponent<Button>();
+        if (xButton != null)
+            xButton.onClick.AddListener(ClosePopup);
+
+        // contentPanel 안 Yes/No 버튼 찾기
+        Transform content = currentPopup.transform.Find("PopupPanel/contentPanel");
+        if (content != null)
         {
-            currentPopup = Instantiate(popupPrefab, popupParent);
+            Button yesButton = content.Find("Yes")?.GetComponent<Button>();
+            Button noButton = content.Find("No")?.GetComponent<Button>();
 
-            // X 버튼 찾기
-            Button xButton = currentPopup.transform.Find("XButton")?.GetComponent<Button>();
-            if (xButton != null)
-                xButton.onClick.AddListener(ClosePopup);
+            SelectPopup popupComp = currentPopup.GetComponent<SelectPopup>();
+            if (popupComp != null)
+            {
+                popupComp.yesButton = yesButton;
+                popupComp.noButton = noButton;
+                popupComp.closeButton = xButton;
 
-            // Yes / No 버튼 찾기
-            Button yesButton = currentPopup.transform.Find("YesButton")?.GetComponent<Button>();
-            Button noButton = currentPopup.transform.Find("NoButton")?.GetComponent<Button>();
+                // Yes 클릭 시 처리
+                popupComp.onYes += () =>
+                {
+                    HandleYes(isAccept);
+                };
 
-            if (yesButton != null)
-                yesButton.onClick.AddListener(ClosePopup);
-            if (noButton != null)
-                noButton.onClick.AddListener(ClosePopup);
+                // No 클릭은 그냥 닫기
+            }
         }
     }
 
-    // 팝업 닫기
+    private void HandleYes(bool isAccept)
+    {
+        Folder root = fileWindow.GetRootFolder();
+        if (root == null) return;
+
+        int abnormalCount = CountAbnormal(root);
+
+        if ((isAccept && abnormalCount == 0) || (!isAccept && abnormalCount > 0))
+        {
+            logWindow.Log("성공!");
+        }
+        else
+        {
+            logWindow.Log("실패!");
+            if (sanityManager != null)
+                sanityManager.DecreaseSanity(40f);
+        }
+    }
+
+    private int CountAbnormal(Folder folder)
+    {
+        if (folder == null) return 0;
+
+        int count = folder.isAbnormal ? 1 : 0;
+        foreach (var child in folder.children)
+            count += CountAbnormal(child);
+        foreach (var file in folder.files)
+            if (file.isAbnormal) count++;
+        return count;
+    }
+
     private void ClosePopup()
     {
         if (currentPopup != null)
