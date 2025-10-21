@@ -1,63 +1,59 @@
 using UnityEngine;
 using TMPro;
 
-public class TimeManager : MonoBehaviour
+public class TimerManager : MonoBehaviour
 {
-    public float gameDuration = 60f; // 제한 시간
-    private float remainingTime;
+    public TextMeshProUGUI timerText;
+    public float totalTime = 60f;
+    private float currentTime;
+    private bool isRunning = false;
 
-    public TextMeshProUGUI timerText; // UI 연결용
-    public bool IsTimeOver => remainingTime <= 0f;
-
-    private bool isGameOverTriggered = false; // 중복 호출 방지
+    private GameOverManager gameOverManager;
 
     void Start()
     {
-        remainingTime = gameDuration;
-        UpdateTimerUI();
+        currentTime = totalTime;
+        UpdateTimerText();
+        gameOverManager = FindObjectOfType<GameOverManager>();
     }
 
     void Update()
     {
-        if (isGameOverTriggered) return; // 이미 끝났으면 중단
+        if (!isRunning || gameOverManager == null || gameOverManager.IsGameOver()) return;
 
-        remainingTime -= Time.deltaTime;
-        remainingTime = Mathf.Max(0f, remainingTime);
-        UpdateTimerUI();
+        currentTime -= Time.deltaTime;
+        UpdateTimerText();
 
-        if (remainingTime <= 0f)
+        if (currentTime <= 0f)
         {
-            isGameOverTriggered = true;
-            OnTimeOver(); //  시간 다 됐을 때 호출
+            currentTime = 0f;
+            isRunning = false;
+            gameOverManager.TriggerGameOver("시간 초과로 인한 게임 오버");
         }
     }
 
-    void UpdateTimerUI()
+    public void StartTimer()
     {
-        if (timerText != null)
+        if (!isRunning)
         {
-            int minutes = Mathf.FloorToInt(remainingTime / 60);
-            int seconds = Mathf.FloorToInt(remainingTime % 60);
-            timerText.text = $"{minutes:00}:{seconds:00}";
+            isRunning = true;
+            Debug.Log("[TimerManager] 타이머 시작!");
         }
     }
 
-    void OnTimeOver()
-    {
-        Debug.Log("[TimeManager] 제한 시간 종료! 게임 오버 조건 발동 가능");
-        // TODO: 나중에 GameOverManager로 연결 예정
-        // ex) FindObjectOfType<GameOverManager>()?.TriggerGameOver();
-    }
-
-    public float GetRemainingTime()
-    {
-        return remainingTime;
-    }
+    public void StopTimer() => isRunning = false;
 
     public void ResetTimer()
     {
-        remainingTime = gameDuration;
-        isGameOverTriggered = false;
-        UpdateTimerUI();
+        currentTime = totalTime;
+        UpdateTimerText();
+        isRunning = false;
+        Debug.Log("[TimerManager] 타이머 초기화 완료!");
+    }
+
+    private void UpdateTimerText()
+    {
+        if (timerText != null)
+            timerText.text = $"Time: {Mathf.CeilToInt(currentTime)}";
     }
 }
