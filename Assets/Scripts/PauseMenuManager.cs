@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class PauseMenuManager : MonoBehaviour
@@ -14,8 +13,9 @@ public class PauseMenuManager : MonoBehaviour
     public Button quitButton;          // 종료
 
     [Header("Audio Settings")]
-    public Slider bgmSlider;           // 볼륨 슬라이더
-    public AudioMixer audioMixer;      // 오디오 믹서 연결용
+    public Slider bgmSlider;           // BGm 볼륨 슬라이더
+    public AudioSource bgmSource;      //  BGM 오브젝트의 AudioSource 연결
+    public GameObject soundManager;    // (필요시) 사운드 매니저 연결
 
     private bool isPaused = false;
 
@@ -24,12 +24,12 @@ public class PauseMenuManager : MonoBehaviour
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
 
-        // 버튼 이벤트 연결
+        // 버튼 연결
         resumeButton?.onClick.AddListener(ResumeGame);
         restartButton?.onClick.AddListener(RestartGame);
         quitButton?.onClick.AddListener(QuitGame);
 
-        // 슬라이더 값 저장 및 불러오기
+        // 볼륨 슬라이더 초기화
         if (bgmSlider != null)
         {
             bgmSlider.onValueChanged.AddListener(SetBGMVolume);
@@ -62,7 +62,7 @@ public class PauseMenuManager : MonoBehaviour
     public void PauseGame()
     {
         pauseMenuUI?.SetActive(true);
-        Time.timeScale = 0f; // 게임 멈춤
+        Time.timeScale = 0f;
         isPaused = true;
 
         Cursor.lockState = CursorLockMode.None;
@@ -72,7 +72,7 @@ public class PauseMenuManager : MonoBehaviour
     public void ResumeGame()
     {
         pauseMenuUI?.SetActive(false);
-        Time.timeScale = 1f; // 게임 재생
+        Time.timeScale = 1f;
         isPaused = false;
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -87,14 +87,30 @@ public class PauseMenuManager : MonoBehaviour
 
     public void SetBGMVolume(float value)
     {
-        // AudioMixer에 "BGMVolume" 파라미터 연결되어 있어야 함
-        audioMixer.SetFloat("BGMVolume", Mathf.Log10(value) * 20);
+        if (bgmSource != null)
+        {
+            bgmSource.volume = value; // BGM 볼륨 직접 제어
+        }
+
+        // 필요하다면 SoundManager에도 반영
+        if (soundManager != null)
+        {
+            AudioSource[] allSources = soundManager.GetComponentsInChildren<AudioSource>();
+            foreach (var src in allSources)
+            {
+                if (src.gameObject.name.ToLower().Contains("bgm"))
+                    src.volume = value;
+            }
+        }
+
         PlayerPrefs.SetFloat("BGMVolume", value);
     }
 
     public void QuitGame()
     {
-        Debug.Log("게임 종료");
-        Application.Quit();
+        Time.timeScale = 1f;
+        Debug.Log("메인 메뉴로 이동합니다.");
+        SceneManager.LoadScene(0);
     }
 }
+
