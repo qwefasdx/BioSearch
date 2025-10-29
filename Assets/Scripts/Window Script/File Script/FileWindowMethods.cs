@@ -1,0 +1,116 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+
+/// <summary>
+/// FileWindow의 UI 동작 관련 메서드 모음.
+/// </summary>
+public partial class FileWindow
+{
+    /// <summary>
+    /// 폴더 열기 및 UI 갱신
+    /// </summary>
+    public void OpenFolder(Folder folder, bool recordPrevious = true)
+    {
+        // 이전 폴더 기록
+        if (recordPrevious && currentFolder != null && folder != currentFolder)
+            folderHistory.Push(currentFolder);
+
+        currentFolder = folder;
+
+        // 콘텐츠 영역 초기화
+        foreach (Transform child in contentArea)
+            Destroy(child.gameObject);
+
+        selectedFolderIcon = null;
+        selectedFileIcon = null;
+
+        // 콘텐츠 유무 확인
+        bool hasContent = (folder.children.Count > 0) || HasFilesInFolder(folder);
+        emptyText.gameObject.SetActive(!hasContent);
+
+        // ---------------------------------------------
+        // "..." 상위 폴더 이동 버튼 생성 (루트 폴더에서는 생성 안 함)
+        // ---------------------------------------------
+        if (upButtonPrefab != null && folder.parent != null)
+        {
+            GameObject upObj = Instantiate(upButtonPrefab, contentArea);
+            Button upButton = upObj.GetComponent<Button>();
+            if (upButton != null)
+            {
+                upButton.onClick.AddListener(() =>
+                {
+                    // 클릭 시 부모 폴더로 이동
+                    OpenFolder(folder.parent, true);
+                });
+            }
+        }
+
+        // 폴더 아이콘 생성
+        foreach (Folder child in folder.children)
+        {
+            GameObject iconObj = Instantiate(folderIconPrefab, contentArea);
+            FolderIcon icon = iconObj.GetComponent<FolderIcon>();
+            icon.Setup(child, this, child.isAbnormal);
+        }
+
+        // 파일 아이콘 생성
+        foreach (File file in currentFolderFiles)
+        {
+            if (file.parent != folder) continue;
+            GameObject iconObj = Instantiate(fileIconPrefab, contentArea);
+            FileIcon icon = iconObj.GetComponent<FileIcon>();
+            icon.Setup(file, this);
+        }
+
+        // 뒤로가기 버튼 활성화
+        if (backButton != null)
+            backButton.gameObject.SetActive(true);
+
+        // 경로 패널 업데이트
+        pathPanelManager?.UpdatePathButtons();
+    }
+
+    /// <summary>
+    /// 해당 폴더에 파일이 존재하는지 확인
+    /// </summary>
+    private bool HasFilesInFolder(Folder folder)
+    {
+        foreach (var f in currentFolderFiles)
+        {
+            if (f.parent == folder) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 폴더 아이콘 선택 상태 갱신
+    /// </summary>
+    public void SetSelectedIcon(FolderIcon icon)
+    {
+        // 기존 선택 해제
+        selectedFolderIcon?.SetSelected(false);
+        selectedFileIcon?.SetSelected(false);
+        selectedFileIcon = null;
+
+        // 새로 선택
+        selectedFolderIcon = icon;
+        selectedFolderIcon?.SetSelected(true);
+    }
+
+    /// <summary>
+    /// 파일 아이콘 선택 상태 갱신
+    /// </summary>
+    public void SetSelectedFileIcon(FileIcon icon)
+    {
+        // 기존 선택 해제
+        selectedFileIcon?.SetSelected(false);
+        selectedFolderIcon?.SetSelected(false);
+        selectedFolderIcon = null;
+
+        // 새로 선택
+        selectedFileIcon = icon;
+        selectedFileIcon?.SetSelected(true);
+    }
+}
