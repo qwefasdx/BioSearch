@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8199013275546281023}
   - component: {fileID: 4826558003796107410}
   - component: {fileID: 3384979227035279951}
+  - component: {fileID: 4615746269634707853}
   m_Layer: 5
   m_Name: DummyFolderIcon
   m_TagString: Untagged
@@ -135,6 +136,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4615746269634707853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2148310354490608959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ac39a9d67edc9d439fad957a555c1f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2682983122548907832
 GameObject:
   m_ObjectHideFlags: 0
